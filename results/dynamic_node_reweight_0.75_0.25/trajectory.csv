@@ -1,0 +1,42 @@
+label,status,score,delay_ps,area_um2,cells,seq_cells,logic_depth,delay_ratio,area_ratio,wall_s,reject_reason,flatten,extra_opt,abc_D_scale,resyn_loops,use_dch,abc_flow,mapper,post,adder_map
+baseline,OK,1.0,2622.29,20835.78,11355,2257,30,1.0,1.0,15.84,,,,,,,,,,
+rule_R-007,OK,0.461224,707.7,21570.472,11857,2257,31,0.2699,1.0353,24.15,,True,,0.85,1,True,resyn2,&nf,buffer;upsize;dnsize,False
+resyn2_ref,OK,1.0,2622.29,20835.78,11355,2257,30,1.0,1.0,23.26,,True,,1.0,1,False,resyn2,map,,False
+speed_dch,OK,0.468053,767.72,20708.898,9178,2257,18,0.2928,0.9939,28.79,,True,opt -full,0.85,2,True,dch_map,&nf,buffer;upsize;dnsize,False
+speed_hard,OK,0.497904,876.21,20610.744,9307,2257,19,0.3341,0.9892,35.98,,True,opt -full; share; opt -fast,0.7,3,True,dch_map,&nf,buffer;upsize;dnsize,True
+orfs_speed_like,OK,0.474207,769.54,21178.388,9885,2257,17,0.2935,1.0164,37.07,,True,opt -full,0.8,3,True,syn2_if,&nf,buffer;upsize;dnsize,False
+area_map,OK,,1807.27,22842.218,17083,2257,36,0.6892,1.0963,26.95,area degraded 9.6% > 5%,True,opt -full,1.1,1,False,dch_map,map -B 0.9,topo;dnsize,False
+balanced,OK,0.477772,786.77,21064.806,12339,2257,33,0.3,1.011,35.41,,True,opt -full; alumacc; opt -fast,0.9,2,True,dch_map,map,topo;dnsize;upsize,True
+lhs,OK,0.610722,1255.33,20976.228,9656,2257,13,0.4787,1.0067,38.6,,True,opt -full,0.9125,4,True,syn2_if,map -a,topo;dnsize,True
+llm0_0,OK,0.461224,707.7,21570.472,11857,2257,31,0.2699,1.0353,24.98,,True,,0.8,1,True,resyn2,&nf,buffer;upsize;dnsize,False
+llm0_1,OK,0.461224,707.7,21570.472,11857,2257,31,0.2699,1.0353,24.64,,True,,0.9,1,True,resyn2,&nf,buffer;upsize;dnsize,False
+llm0_2,OK,0.473554,750.82,21570.206,12116,2257,32,0.2863,1.0352,25.89,,True,,0.85,2,True,resyn2,&nf,buffer;upsize;dnsize,False
+llm0_3,OK,0.460633,706.46,21550.788,11855,2257,31,0.2694,1.0343,26.32,,True,opt -full; alumacc; opt -fast,0.85,1,True,resyn2,&nf,buffer;upsize;dnsize,False
+llm0_4,OK,0.458256,707.52,21327.348,11355,2257,30,0.2698,1.0236,24.03,,True,,0.85,1,True,resyn2,&nf,topo;dnsize;upsize,False
+llm0_5,OK,0.460633,706.46,21550.788,11855,2257,31,0.2694,1.0343,25.79,,True,share; opt -full; opt -fast,0.85,1,True,resyn2,&nf,buffer;upsize;dnsize,False
+llm0_6,OK,0.473554,750.82,21570.206,12116,2257,32,0.2863,1.0352,26.27,,True,,0.6,2,True,resyn2,&nf,buffer;upsize;dnsize,False
+llm0_7,OK,0.473554,750.82,21570.206,12116,2257,32,0.2863,1.0352,25.98,,True,,0.85,2,True,resyn2,map -a,buffer;upsize;dnsize,False
+llm1_0,OK,0.458256,707.52,21327.348,11355,2257,30,0.2698,1.0236,23.94,,True,,0.75,1,True,resyn2,&nf,topo;dnsize;upsize,False
+llm1_1,OK,0.458256,707.52,21327.348,11355,2257,30,0.2698,1.0236,24.26,,True,,0.88,1,True,resyn2,&nf,topo;dnsize;upsize,False
+llm1_2,OK,0.458246,707.52,21326.55,11353,2257,30,0.2698,1.0236,25.16,,True,opt -full; alumacc; opt -fast,0.85,1,True,resyn2,&nf,topo;dnsize;upsize,False
+llm1_3,OK,0.467554,746.0,21185.038,11682,2257,31,0.2845,1.0168,25.76,,True,,0.85,2,True,resyn2,&nf,topo;dnsize;upsize,False
+llm1_4,OK,1.0,2622.29,20835.78,11355,2257,30,1.0,1.0,23.58,,True,,0.85,1,True,resyn2,&nf,topo;dnsize,False
+llm1_5,OK,0.458246,707.52,21326.55,11353,2257,30,0.2698,1.0236,24.3,,True,share; opt -full; opt -fast,0.7,1,True,resyn2,&nf,topo;dnsize;upsize,False
+llm1_6,OK,,195.18,22802.052,12461,2298,10,0.0744,1.0944,16.04,flop count changed (2257 -> 2298),False,,0.85,1,True,resyn2,&nf,topo;dnsize;upsize,False
+llm1_7,OK,0.471185,744.87,21514.612,12137,2257,32,0.2841,1.0326,25.67,,True,opt -full; alumacc; opt -fast,0.65,2,True,resyn2,map,buffer;upsize;dnsize,False
+llm2_0,OK,0.458246,707.52,21326.55,11353,2257,30,0.2698,1.0236,25.14,,True,opt -full; alumacc; opt -fast,0.6,1,True,resyn2,&nf,topo;dnsize;upsize,False
+llm2_1,OK,0.467021,745.52,21152.054,11703,2257,31,0.2843,1.0152,26.81,,True,opt -full; alumacc; opt -fast,0.85,2,True,resyn2,&nf,topo;dnsize;upsize,False
+llm2_2,OK,0.458246,707.52,21326.55,11353,2257,30,0.2698,1.0236,24.77,,True,opt -full; share; opt -fast,0.85,1,True,resyn2,&nf,topo;dnsize;upsize,False
+llm2_3,OK,0.463433,718.47,21497.854,11885,2257,30,0.274,1.0318,31.56,,True,opt -full; alumacc; opt -fast,0.85,1,True,resyn2,&nf,buffer;upsize;dnsize,True
+llm2_4,OK,0.458246,707.52,21326.55,11353,2257,30,0.2698,1.0236,25.5,,True,opt -full; alumacc; opt -fast,0.95,1,True,resyn2,&nf,topo;dnsize;upsize,False
+llm2_5,OK,0.458246,707.52,21326.55,11353,2257,30,0.2698,1.0236,25.1,,True,opt -full; alumacc; opt -fast,0.85,1,True,resyn2,map -a,topo;dnsize;upsize,False
+llm2_6,OK,0.460633,706.46,21550.788,11855,2257,31,0.2694,1.0343,25.59,,True,opt -full; alumacc; opt -fast,0.55,1,True,resyn2,map -B 0.9,buffer;upsize;dnsize,False
+llm2_7,OK,0.471185,744.87,21514.612,12137,2257,32,0.2841,1.0326,25.23,,True,share; opt -full; opt -fast,1.05,2,True,resyn2,&nf,buffer;upsize;dnsize,False
+llm3_0,OK,0.458246,707.52,21326.55,11353,2257,30,0.2698,1.0236,25.97,,True,opt -full; alumacc; opt -fast,0.5,1,True,resyn2,&nf,topo;dnsize;upsize,False
+llm3_1,OK,0.458246,707.52,21326.55,11353,2257,30,0.2698,1.0236,25.1,,True,opt -full; alumacc; opt -fast,0.85,1,True,resyn2,map -B 0.9,topo;dnsize;upsize,False
+llm3_2,OK,0.479259,797.85,20924.624,11163,2257,29,0.3043,1.0043,29.86,,True,opt -full; alumacc; opt -fast,0.85,3,True,resyn2,&nf,topo;dnsize;upsize,False
+llm3_3,OK,0.464123,721.45,21484.288,11389,2257,30,0.2751,1.0311,31.08,,True,opt -full; alumacc; opt -fast,0.85,1,True,resyn2,&nf,topo;dnsize;upsize,True
+llm3_4,OK,0.458246,707.52,21326.55,11353,2257,30,0.2698,1.0236,25.46,,True,opt -full,0.85,1,True,resyn2,&nf,topo;dnsize;upsize,False
+llm3_5,OK,0.99999,2622.29,20834.982,11353,2257,30,1.0,1.0,24.8,,True,opt -full; alumacc; opt -fast,0.85,1,True,resyn2,&nf,,False
+llm3_6,OK,0.479117,777.29,21402.892,11960,2257,34,0.2964,1.0272,28.76,,True,share; opt -full; opt -fast,0.55,2,True,resyn2,map -a,topo;dnsize;upsize,True
+llm3_7,OK,0.458246,707.52,21326.55,11353,2257,30,0.2698,1.0236,23.47,,True,opt -full; share; opt -fast,1.1,1,True,resyn2,&nf,topo;dnsize;upsize,False

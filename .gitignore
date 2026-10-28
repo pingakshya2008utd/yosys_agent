@@ -19,3 +19,6 @@ __pycache__/
 #   results/        best_config.json, trajectory.csv, summary.md, the .xlsx
 #   knowledge/      rules.json and per-design run history
 #   *.log           sweep console transcripts (small, useful as evidence)
+
+# graphviz intermediates for architecture.pdf (regenerate with make_architecture_pdf.py)
+build/

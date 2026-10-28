@@ -13,15 +13,16 @@
       "delay": 0.6,
       "area": 0.4
     },
-    "rationale": "At 6.2k RTL lines with no macros, this NoC-style router wrapper is dominated by routing/arbitration FSM and mux logic rather than wide arithmetic, but the 2.0 ns clock still warrants a delay-leaning weight."
+    "rationale": "At 6251 RTL lines with no macros, dynamic_node is a small NoC router dominated by routing/arbitration FSMs and mux-heavy control logic rather than wide arithmetic, though its 2.0 ns clock still warrants a delay-leaning weighting."
   },
   "weights": {
-    "delay": 0.75,
-    "area": 0.25
+    "delay": 0.6,
+    "area": 0.4
   },
   "leeway": 0.05,
   "retrieved_rules": [
-    "R-007"
+    "R-002",
+    "R-001"
   ],
   "baseline_mode": "resyn2",
   "baseline_csv_crosscheck": {
@@ -42,56 +43,56 @@
     "cell_count": 11355,
     "seq_cells": 2257,
     "logic_depth": 30,
-    "wall_time_s": 15.84
+    "wall_time_s": 15.17
   },
   "best": {
     "config": {
       "flatten": true,
-      "extra_opt": "opt -full; alumacc; opt -fast",
+      "extra_opt": "opt -full",
       "abc_D_scale": 0.85,
-      "resyn_loops": 1,
+      "resyn_loops": 2,
       "use_dch": true,
-      "abc_flow": "resyn2",
+      "abc_flow": "dch_map",
       "mapper": "&nf",
-      "post": "topo;dnsize;upsize",
+      "post": "buffer;upsize;dnsize",
       "adder_map": false
     },
-    "score": 0.458246,
-    "delay_ps": 707.52,
-    "area_um2": 21326.55,
-    "cells": 11353,
-    "logic_depth": 30,
-    "delay_ratio": 0.2698,
-    "area_ratio": 1.0236,
-    "label": "llm1_2",
-    "rundir": "/home/ubuntu/chisage/yosys-agent/work/dynamic_node/iter2/run02_llm1_2"
+    "score": 0.573224,
+    "delay_ps": 767.72,
+    "area_um2": 20708.898,
+    "cells": 9178,
+    "logic_depth": 18,
+    "delay_ratio": 0.2928,
+    "area_ratio": 0.9939,
+    "label": "speed_dch",
+    "rundir": "/home/ubuntu/chisage/yosys-agent/work/dynamic_node/iter0/run03_speed_dch"
   },
   "verifier": {
-    "verdict": "reject",
+    "verdict": "accept_unverified",
     "reasons": [
-      "Large delay improvement (0.27x) with logic_depth unchanged at 30 (identical to baseline) and negligible area change (+2.36%), suggesting the mapping did not meaningfully change despite the reported delay gain",
-      "No SAT miter ran due to design size, so functional equivalence is unverified beyond check -assert"
+      "check -assert passed",
+      "ports and sequential cell counts match baseline",
+      "delay improvement correlates with logic depth reduction (30->18) and cell count reduction, consistent with real remapping, not suspicious",
+      "no SAT miter run due to design size, so functional equivalence not formally verified"
     ],
     "unverified": [
-      "Functional equivalence via SAT/formal miter",
-      "Legitimacy of delay improvement given unchanged logic depth"
+      "functional equivalence via SAT miter (skipped due to design size)"
     ]
   },
-  "n_synth_runs": 41,
-  "n_accepted": 38,
-  "iterations_run": 5,
+  "n_synth_runs": 33,
+  "n_accepted": 28,
+  "iterations_run": 4,
   "best_score_by_iteration": [
-    0.461224,
-    0.458256,
-    0.458246,
-    0.458246,
-    0.458246
+    0.573224,
+    0.573224,
+    0.573224,
+    0.573224
   ],
-  "iterations_to_best": 3,
-  "agent_wallclock_s": 379.9,
-  "baseline_wallclock_s": 15.84,
-  "per_run_timeout_s": 126,
+  "iterations_to_best": 1,
+  "agent_wallclock_s": 315.0,
+  "baseline_wallclock_s": 15.17,
+  "per_run_timeout_s": 121,
   "rules_added": [
-    "R-011"
+    "R-007"
   ]
 }
