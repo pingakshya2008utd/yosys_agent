@@ -233,6 +233,33 @@
       ],
       "confidence": 0.6,
       "note": "MEASURED on jpeg: score 0.3412 vs baseline 1.0"
+    },
+    {
+      "id": "R-011",
+      "applies_to": {
+        "size_class": [
+          "small"
+        ],
+        "dominant_style": [
+          "control"
+        ]
+      },
+      "knob_delta": {
+        "abc_D_scale": 0.85,
+        "use_dch": true,
+        "mapper": "&nf",
+        "post": "topo;dnsize;upsize",
+        "adder_map": false
+      },
+      "goal": "delay",
+      "evidence": [
+        {
+          "design": "dynamic_node",
+          "delta_score": -0.5418
+        }
+      ],
+      "confidence": 0.6,
+      "note": "MEASURED on dynamic_node: score 0.4582 vs baseline 1.0"
     }
   ]
 }

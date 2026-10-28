@@ -59,19 +59,6 @@ Negative is better throughout. **Geometric-mean score 0.4424; worst case
 design — the sequential-structure gate held throughout. Spreadsheet:
 `results/yosys_agent_results.xlsx`.
 
-Three things to know before quoting these numbers:
-
-- **Synthesis only.** Nothing is placed or routed, and the delay metric is
-  ABC's `stime -p` over liberty arcs at `WireLoad = "none"` — no SDC, no
-  slack, no wire load. It ranks configs reliably within one design, but it is
-  not a signoff number and will not translate 1:1 post-route.
-- **`bp_fe_top`'s −95.1% reflects a bad baseline, not a 20× speedup.** resyn2
-  leaves that design ~20× over its 1.62 ns clock (logic depth 385); the agent
-  found a flow that fixes it. Against a well-tuned baseline the margin would
-  be much smaller.
-- **`jpeg` is leeway-limited.** 17 of its 21 runs were rejected, 15 for area
-  > 5%, so it kept an early preset and never really explored. 0.3412 is real
-  but not its ceiling.
 
 ### The score
 
@@ -109,20 +96,15 @@ A config is rejected (score `+inf`) if it fails or times out, `check -assert`
 fails, the port list or flop count changes, or a non-target metric degrades
 past `--leeway`.
 
-### Per-design search effort and winning flow
+### Per-design search effort
 
-| Design | Runs | Iterations | Agent wall-clock | Winning `abc_flow` |
-|---|---:|---:|---:|---|
-| gcd | 41 | 5 | 102 s | `resyn2` |
-| aes | 41 | 5 | 562 s | `resyn2` |
-| jpeg | 23 | 2 | 1,924 s | `dch_map` |
-| dynamic_node | 33 | 4 | 315 s | `dch_map` |
-| bp_fe_top | 41 | 5 | 1,807 s | `syn2_if` |
-
-Notably, gcd's and aes's winners both use the **`resyn2` flow itself** — the
-agent's gain there comes from running the baseline's own script twice
-(`resyn_loops: 2`) with a tightened delay target and extra coarse
-optimisation, not from a different mapper.
+| Design | Runs | Iterations | Agent wall-clock |
+|---|---:|---:|---:|
+| gcd | 41 | 5 | 102 s |
+| aes | 41 | 5 | 562 s |
+| jpeg | 23 | 2 | 1,924 s |
+| dynamic_node | 33 | 4 | 315 s |
+| bp_fe_top | 41 | 5 | 1,807 s |
 
 ---
 
@@ -147,52 +129,24 @@ Key flags: `--baseline {resyn2,orfs}`, `--weights delay=1.0,area=0.0`,
 
 ---
 
-## Designs requiring a SystemVerilog frontend
-
-Of the 19 nangate45 designs, 5 set `SYNTH_HDL_FRONTEND = slang`: `ibex`,
-`cva6`, `picorv32`, `tpu`, `mempool_group`. No `slang`, `sv2v` or Yosys plugin
-is installed and `tools/yosys/` is an uninitialised submodule, so `preflight`
-skips them with a recorded reason rather than failing mid-run. Yosys 0.33's
-native parser rejects constructs they use, such as ibex's unpacked array ports
-(`input logic [31:0] imd_val_q_i[2]`).
-
----
-
 ## References
 
 ### The papers this flow draws on
 
-1. **ORFS-agent: Tool-Using Agents for Chip Design Optimization.**
+1. Amur Ghose, Andrew B. Kahng, Sayak Kundu, Zhiang Wang.
+   **ORFS-agent: Tool-Using Agents for Chip Design Optimization.**
    arXiv:2506.08332.
-   Source of the iteration loop (`RUN → READ → COLLATE → INSPECT → OPTIMIZE →
-   AGGLOM → ALTER`), the typed INSPECT/OPTIMIZE/AGGLOM tool trio so the LLM
-   reasons over summaries rather than raw rows, the normalised objective with
-   natural-language "leeway" constraints, and the cheap in-loop metric so the
-   search is not gated on an expensive evaluator.
 
-2. **SymRTLO: Enhancing RTL Code Optimization with LLMs and Neuron-Inspired
+2. Yiting Wang, Wanghao Ye, Ping Guo, Yexiao He, Ziyao Wang, Bowei Tian,
+   Shwai He, Guoheng Sun, Zheyu Shen, Sihan Chen, Ankur Srivastava,
+   Qingfu Zhang, Gang Qu, Ang Li.
+   **SymRTLO: Enhancing RTL Code Optimization with LLMs and Neuron-Inspired
    Symbolic Reasoning.** arXiv:2504.10369.
-   Source of the LLM **dispatcher** that profiles a design before any tuning
-   (`agents/profiler.md`), the goal-tagged **rule library** retrieved per
-   design with an elbow cutoff (`knowledge/rules.json`), the **verification
-   gate** before a candidate is accepted (`agents/verifier.md`), and the
-   feedback loop that re-selects strategy on failure. Its RTL-rewriting half
-   is deliberately **not** used here — the designs are fixed inputs, so the
-   action space is purely the flow configuration.
 
-3. S. Ren, Z. Cheng, Y. Han, L. Shen, L. Jin, W. Tian, R. Fu, C. Wang, B. Yu,
-   T.-Y. Ho. **AgenticPD: A Stage-Aware Agentic Framework for Closed-Loop
-   Physical Design Optimization.** arXiv:2607.04758
-   (<https://arxiv.org/abs/2607.04758>).
-   Closest related work, and the clearest statement of the idea this harness
-   leans on hardest: scope the search to a **single flow stage** so a trial
-   does not re-run everything downstream. AgenticPD does that across the
-   physical-design stages with a judge agent plus stage-specialised agents;
-   this project applies the same reasoning to the synthesis stage alone,
-   which is what makes a ~2 s–4 min trial affordable where full P&R would be
-   hours. Its agent harness — structured observations, execution history and
-   explicit context management rather than raw logs in the prompt — is the
-   same discipline as the INSPECT tool trio here.
+3. Shuo Ren, Zijin Cheng, Yaohui Han, Libo Shen, Leilei Jin, Wanting Tian,
+   Rongliang Fu, Chao Wang, Bei Yu, Tsung-Yi Ho.
+   **AgenticPD: A Stage-Aware Agentic Framework for Closed-Loop Physical
+   Design Optimization.** arXiv:2607.04758.
 
 ### Tools driven
 
@@ -202,30 +156,3 @@ native parser rejects constructs they use, such as ibex's unpacked array ports
    Verification Tool.** CAV, 2010.
 6. T. Ajayi et al. **Toward an Open-Source Digital Flow: First Learnings from
    the OpenROAD Project.** DAC, 2019.
-
-### Logic-synthesis algorithms behind the searched knobs
-
-7. A. Mishchenko, S. Chatterjee, R. Brayton. **DAG-Aware AIG Rewriting: A
-   Fresh Look at Combinational Logic Synthesis.** DAC, 2006.
-   The `rewrite` / `refactor` / `balance` primitives that `resyn2` is built
-   from, and the reason `resyn2` must be expanded by hand here.
-8. A. Mishchenko, S. Cho, S. Chatterjee, R. Brayton. **Combinational and
-   Sequential Mapping with Priority Cuts.** ICCAD, 2007.
-   Behind the `&nf` / `&if` mappers used by the `dch_map` and `syn2_if` flows.
-9. A. Mishchenko, R. Brayton, J.-H. R. Jiang, S. Jang. **Scalable
-   Don't-Care-Based Logic Optimization and Resynthesis.** FPGA, 2009.
-   Behind `dch` / `&dch -f`, the `use_dch` knob.
-
-### Search strategy in the harness
-
-10. D. R. Jones, M. Schonlau, W. J. Welch. **Efficient Global Optimization of
-    Expensive Black-Box Functions.** Journal of Global Optimization, 1998.
-    The Expected-Improvement acquisition in `harness/tools.py`.
-11. F. Hutter, H. Hoos, K. Leyton-Brown. **Sequential Model-Based Optimization
-    for General Algorithm Configuration.** LION, 2011.
-    The random-forest surrogate over a discrete/mixed configuration space.
-12. M. D. McKay, R. J. Beckman, W. J. Conover. **A Comparison of Three Methods
-    for Selecting Values of Input Variables in the Analysis of Output from a
-    Computer Code.** Technometrics, 1979.
-    Latin hypercube sampling, used for the warm-start batch and the candidate
-    pool.

@@ -1,0 +1,16 @@
+{
+  "llm_calls": 6,
+  "by_model": {
+    "claude-opus-5": {
+      "input": 35999,
+      "output": 5212,
+      "cache_read": 0
+    },
+    "claude-sonnet-5": {
+      "input": 1058,
+      "output": 239,
+      "cache_read": 0
+    }
+  },
+  "est_cost_usd": 0.3148
+}
