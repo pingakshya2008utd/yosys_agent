@@ -59,6 +59,20 @@ Negative is better throughout. **Geometric-mean score 0.4424; worst case
 design — the sequential-structure gate held throughout. Spreadsheet:
 `results/yosys_agent_results.xlsx`.
 
+Three things to know before quoting these numbers:
+
+- **Synthesis only.** Nothing is placed or routed, and the delay metric is
+  ABC's `stime -p` over liberty arcs at `WireLoad = "none"` — no SDC, no
+  slack, no wire load. It ranks configs reliably within one design, but it is
+  not a signoff number and will not translate 1:1 post-route.
+- **`bp_fe_top`'s −95.1% reflects a bad baseline, not a 20× speedup.** resyn2
+  leaves that design ~20× over its 1.62 ns clock (logic depth 385); the agent
+  found a flow that fixes it. Against a well-tuned baseline the margin would
+  be much smaller.
+- **`jpeg` is leeway-limited.** 17 of its 21 runs were rejected, 15 for area
+  > 5%, so it kept an early preset and never really explored. 0.3412 is real
+  but not its ceiling.
+
 ### The score
 
 ```
@@ -133,180 +147,6 @@ Key flags: `--baseline {resyn2,orfs}`, `--weights delay=1.0,area=0.0`,
 
 ---
 
-## Action space (9 dimensions)
-
-| Knob | Range | Effect |
-|---|---|---|
-| `abc_flow` | `resyn2`, `dch_map`, `syn2_if` | script family: the validated resyn2 body; a dch/map core; or an ORFS-`abc_speed`-style `&syn2`/`&if -g -K 6`/`&synch2`/`&nf` loop |
-| `abc_D_scale` | 0.50–1.10 | multiplies the SDC period for ABC's `-D` delay target |
-| `resyn_loops` | 1–4 | repetitions of the flow's core |
-| `use_dch` | bool | `&dch -f` / `dch -f` choice computation; strong for delay, slow |
-| `mapper` | `&nf`, `map`, `map -a`, `map -B 0.9` | delay- vs area-driven mapping (ignored by `resyn2`/`syn2_if`) |
-| `post` | 4 choices | post-map sizing (`buffer;upsize;dnsize`, `topo;dnsize`, …) |
-| `extra_opt` | 5 choices | coarse-stage Yosys opt (`share`, `alumacc`, …) |
-| `adder_map` | bool | `extract_fa` + map to the platform's adder cells |
-| `flatten` | bool | `synth -flatten` |
-
----
-
-## Metrics
-
-All four come from one Yosys invocation, so measurement costs no extra passes:
-
-| Field | Source |
-|---|---|
-| `chip_area` | `stat -liberty -top` → `Chip area for top module` (µm²) |
-| `cell_count`, `seq_cells` | `stat -liberty -top` table |
-| `abc_delay_ps` | ABC `stime -p` → `Delay = <x> ps` |
-| `logic_depth` | `ltp -noff` **after deleting all sequential cells** |
-
-Parsing is pure Python (`harness/metrics.py`) — zero tokens in the hot loop.
-The `analyst` agent is only invoked when those regexes come up empty.
-
-### Two metric traps
-
-**`yosys sta` is unusable here.** The pass exists in Yosys 0.33 but aborts with
-``Module `INV_X1' is used with parameters but is not parametric!`` on any
-liberty-mapped netlist. ABC's `stime -p` is therefore the sole delay source,
-and there is no second timing engine in the loop. It reports a max arrival over
-liberty arcs at `WireLoad = "none"`: no SDC, no clocks, no slack, no wire load,
-single corner. It ranks configs against each other on one design reliably —
-which is what the optimizer needs — but it is **not a signoff number**.
-
-**`ltp -noff` does not do what its name suggests on a mapped netlist.** It
-recognises only Yosys-internal `$_DFF_*` cells, not library flops like
-`DFF_X1`, so it walks straight *through* the flops, hits sequential loops,
-breaks them arbitrarily and reports a meaningless length — while emitting
-hundreds of thousands of `Detected loop` warnings. True combinational depth
-requires deleting the sequentials first:
-
-```tcl
-delete t:DFF* t:SDFF* t:DLH* t:DLL* t:TLAT* t:fakeram45_*
-ltp -noff
-```
-
-Both passes run; `logic_depth` is the second, and serves as the independent
-cross-check on `abc_delay_ps`.
-
----
-
-## Step 0 findings (why this does not drive ORFS directly)
-
-The plan says to discover the knob surface rather than trust its priors. On
-this machine, discovery found:
-
-1. **ORFS's `scripts/synth.tcl` cannot run on the installed Yosys.** It calls
-   `abc_new`, absent from Yosys 0.33. The plan's "Action Space A" (driving
-   `make synth`) is not viable; `harness/synth_templated.tcl` owns the flow.
-2. **`ABC_CLOCK_PERIOD_IN_PS` does not exist** in this ORFS checkout. The
-   equivalent lever survives as `abc_D_scale` → `abc -D <ps>`.
-3. **`abc` has no `-dont_use` in Yosys 0.33**, so the platform's
-   `DONT_USE_CELLS` (`AOI211_X1`, `OAI211_X1`, …) cannot be excluded. Affects
-   baseline and candidates equally, so ratios hold, but absolute areas differ
-   from an ORFS `make synth`.
-4. **Yosys invokes `yosys-abc -s`, which skips `abc.rc`, so no ABC aliases
-   exist at all** — not just `resyn2`, but `b`, `rw`, `rf`, `rwz`, `rfz` too.
-   Every script is written in primitives:
-   `balance; rewrite; refactor; balance; rewrite; rewrite -z; balance; refactor -z; rewrite -z; balance`.
-5. `&nf` is a GIA-space mapper and must be wrapped in `&get -n` / `&put`;
-   `map` variants must not be.
-6. In a `+`-prefixed ABC script string Yosys replaces commas with blanks, so
-   the rendered string uses commas, never spaces.
-7. **`dch` requires a strashed network.** With a non-`&` mapper and
-   `resyn_loops > 1`, a naive loop emits `dch -f; map; dch -f; map` and ABC
-   aborts — `map` leaves a mapped netlist. Every iteration re-strashes.
-8. **`stat` must be given `-top`.** Without it a non-flattened run reports only
-   the top module's own cells and area. The aggregate lives in a
-   `=== design hierarchy ===` block labelled `Chip area for top module`.
-9. **Never count flops by scanning netlist text.** A submodule instantiated
-   twice has its flops written once, so a hierarchical gcd netlist shows 18
-   flop instances for a 34-flop design. The gate uses `seq_cells` from
-   `stat -top`.
-
----
-
-## Deviations from the plan
-
-- **No `temperature`.** The plan asks for temperature 0.1 with top-k/nucleus
-  disabled. Sampling parameters are **removed** on Claude Opus 5 and Sonnet 5
-  and return HTTP 400. Determinism comes from a strict
-  `output_config.format` JSON schema plus a fixed `effort`. LLM proposals are
-  therefore not bit-reproducible; the surrogate and LHS paths are seeded.
-- **Retiming pinned off** (`knobs.RETIME = False`). `dretime` changes the
-  sequential boundary, so flop counts legitimately differ and the cheap gate
-  cannot verify it — the plan's §7 defensible call.
-- **SAT miter off by default** (`--miter`). It does not converge on these
-  liberty-mapped netlists: every output returns *unproven*. **Unproven ≠
-  disproved** — no counterexample was found, the solver simply did not close.
-  The code reports `proven` / `disproved` / `inconclusive`, and only
-  `disproved` rejects a config. Structural checks always run, which is exactly
-  what the `accept_unverified` verdicts reflect.
-- **Orchestrator is code, not an LLM.** Every decision it makes is mechanical.
-  `agents/orchestrator.md` records the contract it implements.
-
----
-
-## Caveats on the results above
-
-- **`bp_fe_top`'s ×0.049 is real but reflects a bad baseline, not a 20×
-  speedup.** A 32,445 ps baseline against a 1.62 ns clock means resyn2 misses
-  timing by ~20× on this design. It is corroborated independently — logic depth
-  collapses 385 → 35 — so the measurement is sound, but the honest reading is
-  that resyn2 produces a pathologically deep netlist here (flagged as an
-  outlier in the original sweep too) and the agent found a flow that fixes it.
-  Against a well-tuned baseline the margin would be far smaller.
-- **`jpeg` is leeway-limited, not fully optimised.** It kept its iteration-0
-  preset; 17 of 21 runs were rejected, 15 for area > 5%. Iteration 1 rejected
-  all 8, collapsing K from 8 → 4 → 1 via the all-fail recovery path. 0.3412 is
-  a real score, but the search never explored. A ~15% leeway would likely do
-  better, since the objective already penalises area.
-- **`gcd` is the one estimator disagreement.** Delay ratio 0.505 while depth
-  ratio is 1.167 — depth got *worse* (12 → 14) as delay improved. Plausible as
-  genuine cell-sizing gain at that size, but it is the single row where the two
-  estimators point opposite ways. `results/summary.md` flags it.
-- **gcd and aes were still improving when the budget ran out** (both found
-  their best on the final iteration; gcd jumped 0.8669 → 0.6345). Raising
-  `--iters` would likely help those two. `dynamic_node` converged in
-  iteration 1 and stopped early on patience.
-- **Synthesis only.** Nothing is placed or routed; these gains need not
-  survive P&R. The clock period is treated as a spec, not a knob.
-
----
-
-## Layout
-
-```
-run.py                       orchestrator (non-LLM glue)
-make_xlsx.py                 builds results/yosys_agent_results.xlsx
-status.sh                    progress of a running sweep
-agents/*.md                  agent system prompts, loaded by run.py
-harness/knobs.py             schema, presets, ABC script rendering
-harness/synth_templated.tcl  the parameterised Yosys flow
-harness/runner.py            ORFS introspection + parallel launcher
-harness/metrics.py           log parsing (pure Python)
-harness/tools.py             INSPECT / OPTIMIZE / AGGLOM + rule retrieval
-harness/score.py             normalisation, leeway, ranking
-harness/llm.py               Anthropic client, strict JSON, token accounting
-knowledge/rules.json         cross-design rule library (4 seeds → 10 learned)
-knowledge/history/*.jsonl    every run ever
-results/<design>/            best_config.json, trajectory.csv
-results/summary.md           report
-results/yosys_agent_results.xlsx   baseline-vs-optimized spreadsheet
-work/<design>/               per-run dirs: env.json, config.json, log, netlist
-```
-
-## Budget tiers
-
-`K` is capped by core count (Yosys is single-threaded); the `large` tier is
-additionally capped at `free_GB / 24`. Tiers run smallest-first so
-`rules.json` is populated before the expensive designs — the main transfer
-win, and it worked here: the library grew from 4 seeds to 10 rules, and jpeg
-retrieved 5 learned rules at entry.
-
-Per-run timeout is `max(90 s, 8 × baseline_synth_time)`, capped by tier. A
-small multiple of the baseline would silently kill the delay-targeted arms,
-which are legitimately 3–4.5× slower by design.
-
 ## Designs requiring a SystemVerilog frontend
 
 Of the 19 nangate45 designs, 5 set `SYNTH_HDL_FRONTEND = slang`: `ibex`,
@@ -315,3 +155,77 @@ is installed and `tools/yosys/` is an uninitialised submodule, so `preflight`
 skips them with a recorded reason rather than failing mid-run. Yosys 0.33's
 native parser rejects constructs they use, such as ibex's unpacked array ports
 (`input logic [31:0] imd_val_q_i[2]`).
+
+---
+
+## References
+
+### The papers this flow draws on
+
+1. **ORFS-agent: Tool-Using Agents for Chip Design Optimization.**
+   arXiv:2506.08332.
+   Source of the iteration loop (`RUN → READ → COLLATE → INSPECT → OPTIMIZE →
+   AGGLOM → ALTER`), the typed INSPECT/OPTIMIZE/AGGLOM tool trio so the LLM
+   reasons over summaries rather than raw rows, the normalised objective with
+   natural-language "leeway" constraints, and the cheap in-loop metric so the
+   search is not gated on an expensive evaluator.
+
+2. **SymRTLO: Enhancing RTL Code Optimization with LLMs and Neuron-Inspired
+   Symbolic Reasoning.** arXiv:2504.10369.
+   Source of the LLM **dispatcher** that profiles a design before any tuning
+   (`agents/profiler.md`), the goal-tagged **rule library** retrieved per
+   design with an elbow cutoff (`knowledge/rules.json`), the **verification
+   gate** before a candidate is accepted (`agents/verifier.md`), and the
+   feedback loop that re-selects strategy on failure. Its RTL-rewriting half
+   is deliberately **not** used here — the designs are fixed inputs, so the
+   action space is purely the flow configuration.
+
+3. S. Ren, Z. Cheng, Y. Han, L. Shen, L. Jin, W. Tian, R. Fu, C. Wang, B. Yu,
+   T.-Y. Ho. **AgenticPD: A Stage-Aware Agentic Framework for Closed-Loop
+   Physical Design Optimization.** arXiv:2607.04758
+   (<https://arxiv.org/abs/2607.04758>).
+   Closest related work, and the clearest statement of the idea this harness
+   leans on hardest: scope the search to a **single flow stage** so a trial
+   does not re-run everything downstream. AgenticPD does that across the
+   physical-design stages with a judge agent plus stage-specialised agents;
+   this project applies the same reasoning to the synthesis stage alone,
+   which is what makes a ~2 s–4 min trial affordable where full P&R would be
+   hours. Its agent harness — structured observations, execution history and
+   explicit context management rather than raw logs in the prompt — is the
+   same discipline as the INSPECT tool trio here.
+
+### Tools driven
+
+4. C. Wolf, J. Glaser, J. Kepler. **Yosys — A Free Verilog Synthesis Suite.**
+   Austrochip, 2013.
+5. R. Brayton, A. Mishchenko. **ABC: An Academic Industrial-Strength
+   Verification Tool.** CAV, 2010.
+6. T. Ajayi et al. **Toward an Open-Source Digital Flow: First Learnings from
+   the OpenROAD Project.** DAC, 2019.
+
+### Logic-synthesis algorithms behind the searched knobs
+
+7. A. Mishchenko, S. Chatterjee, R. Brayton. **DAG-Aware AIG Rewriting: A
+   Fresh Look at Combinational Logic Synthesis.** DAC, 2006.
+   The `rewrite` / `refactor` / `balance` primitives that `resyn2` is built
+   from, and the reason `resyn2` must be expanded by hand here.
+8. A. Mishchenko, S. Cho, S. Chatterjee, R. Brayton. **Combinational and
+   Sequential Mapping with Priority Cuts.** ICCAD, 2007.
+   Behind the `&nf` / `&if` mappers used by the `dch_map` and `syn2_if` flows.
+9. A. Mishchenko, R. Brayton, J.-H. R. Jiang, S. Jang. **Scalable
+   Don't-Care-Based Logic Optimization and Resynthesis.** FPGA, 2009.
+   Behind `dch` / `&dch -f`, the `use_dch` knob.
+
+### Search strategy in the harness
+
+10. D. R. Jones, M. Schonlau, W. J. Welch. **Efficient Global Optimization of
+    Expensive Black-Box Functions.** Journal of Global Optimization, 1998.
+    The Expected-Improvement acquisition in `harness/tools.py`.
+11. F. Hutter, H. Hoos, K. Leyton-Brown. **Sequential Model-Based Optimization
+    for General Algorithm Configuration.** LION, 2011.
+    The random-forest surrogate over a discrete/mixed configuration space.
+12. M. D. McKay, R. J. Beckman, W. J. Conover. **A Comparison of Three Methods
+    for Selecting Values of Input Variables in the Analysis of Output from a
+    Computer Code.** Technometrics, 1979.
+    Latin hypercube sampling, used for the warm-start batch and the candidate
+    pool.
