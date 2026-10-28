@@ -19,44 +19,81 @@ flow configuration, which keeps equivalence checking structural and cheap.
 Five nangate45 designs, 179 synthesis runs, 78.5 min wall-clock, **$1.34** of
 API spend. Baseline is the validated `resyn2` configuration from
 `results/synth_resyn2_summary.csv`, re-measured here (see
-[Scoring](#scoring-the-baseline-and-the-agent-are-measured-identically)).
+[The score](#the-score)).
 
-| Design | Metric | resyn2 baseline | Agent best | Ratio |
+| Design | Metric | resyn2 baseline | Agent best | % change |
 |---|---|---:|---:|---:|
-| **gcd** | delay (ps) | 644.27 | 325.19 | ×0.505 |
-| | area (µm²) | 460.18 | 471.09 | ×1.024 |
-| | cells | 362 | 330 | ×0.912 |
-| | logic depth | 12 | 14 | ×1.167 |
-| | flops | 35 | 35 | — |
-| | **score** | **1.0000** | **0.6345** | |
-| **aes** | delay (ps) | 1,981.70 | 653.27 | ×0.330 |
-| | area (µm²) | 14,086.03 | 14,483.97 | ×1.028 |
-| | cells | 12,086 | 12,162 | ×1.006 |
-| | logic depth | 21 | 21 | ×1.000 |
-| | flops | 562 | 562 | — |
-| | **score** | **1.0000** | **0.5043** | |
-| **jpeg** | delay (ps) | 9,312.47 | 1,129.88 | ×0.121 |
-| | area (µm²) | 91,928.80 | 92,000.89 | ×1.001 |
-| | cells | 74,546 | 65,521 | ×0.879 |
-| | logic depth | 35 | 31 | ×0.886 |
-| | flops | 4,376 | 4,376 | — |
-| | **score** | **1.0000** | **0.3412** | |
-| **dynamic_node** | delay (ps) | 2,622.29 | 767.72 | ×0.293 |
-| | area (µm²) | 20,835.78 | 20,708.90 | ×0.994 |
-| | cells | 11,355 | 9,178 | ×0.808 |
-| | logic depth | 30 | 18 | ×0.600 |
-| | flops | 2,257 | 2,257 | — |
-| | **score** | **1.0000** | **0.5732** | |
-| **bp_fe_top** | delay (ps) | 32,445.40 | 1,588.17 | ×0.049 |
-| | area (µm²) | 49,989.38 | 46,835.15 | ×0.937 |
-| | cells | 35,217 | 27,217 | ×0.773 |
-| | logic depth | 385 | 35 | ×0.091 |
-| | flops | 4,315 | 4,315 | — |
-| | **score** | **1.0000** | **0.2709** | |
+| **gcd** | delay (ps) | 644.27 | 325.19 | **−49.5%** |
+| | area (µm²) | 460.18 | 471.09 | +2.4% |
+| | cells | 362 | 330 | −8.8% |
+| | logic depth | 12 | 14 | +16.7% |
+| | flops | 35 | 35 | 0.0% |
+| | **score** | **1.0000** | **0.6345** | **−36.6%** |
+| **aes** | delay (ps) | 1,981.70 | 653.27 | **−67.0%** |
+| | area (µm²) | 14,086.03 | 14,483.97 | +2.8% |
+| | cells | 12,086 | 12,162 | +0.6% |
+| | logic depth | 21 | 21 | 0.0% |
+| | flops | 562 | 562 | 0.0% |
+| | **score** | **1.0000** | **0.5043** | **−49.6%** |
+| **jpeg** | delay (ps) | 9,312.47 | 1,129.88 | **−87.9%** |
+| | area (µm²) | 91,928.80 | 92,000.89 | +0.1% |
+| | cells | 74,546 | 65,521 | −12.1% |
+| | logic depth | 35 | 31 | −11.4% |
+| | flops | 4,376 | 4,376 | 0.0% |
+| | **score** | **1.0000** | **0.3412** | **−65.9%** |
+| **dynamic_node** | delay (ps) | 2,622.29 | 767.72 | **−70.7%** |
+| | area (µm²) | 20,835.78 | 20,708.90 | −0.6% |
+| | cells | 11,355 | 9,178 | −19.2% |
+| | logic depth | 30 | 18 | −40.0% |
+| | flops | 2,257 | 2,257 | 0.0% |
+| | **score** | **1.0000** | **0.5732** | **−42.7%** |
+| **bp_fe_top** | delay (ps) | 32,445.40 | 1,588.17 | **−95.1%** |
+| | area (µm²) | 49,989.38 | 46,835.15 | −6.3% |
+| | cells | 35,217 | 27,217 | −22.7% |
+| | logic depth | 385 | 35 | −90.9% |
+| | flops | 4,315 | 4,315 | 0.0% |
+| | **score** | **1.0000** | **0.2709** | **−72.9%** |
 
-**Geometric-mean score 0.4424; worst case 0.6345 (gcd); 5/5 designs improved.**
-Flop counts are identical in every design — the sequential-structure gate held
-throughout. Spreadsheet: `results/yosys_agent_results.xlsx`.
+Negative is better throughout. **Geometric-mean score 0.4424; worst case
+0.6345 (gcd); 5/5 designs improved.** Flop counts are identical in every
+design — the sequential-structure gate held throughout. Spreadsheet:
+`results/yosys_agent_results.xlsx`.
+
+### The score
+
+```
+score = w_delay × (delay / delay_base) + w_area × (area / area_base)
+```
+
+Lower is better. The baseline substitutes into its own formula as
+`w_delay + w_area = 1.0000`, so it scores exactly 1.000 by construction and
+the agent column reads directly as a fraction of baseline cost.
+
+Weights are per-design, proposed by the `profiler` agent from the design's
+size, style and clock:
+
+| Design | w_delay | w_area |
+|---|---:|---:|
+| gcd | 0.75 | 0.25 |
+| aes | 0.75 | 0.25 |
+| jpeg | 0.75 | 0.25 |
+| dynamic_node | 0.60 | 0.40 |
+| bp_fe_top | 0.75 | 0.25 |
+
+Baseline and candidates run through the same `harness/synth_templated.tcl`
+with the same metric extraction, differing only in the knob-driven variables,
+so the two columns are directly comparable. Each run's exact environment is
+saved to `work/<design>/**/env.json`.
+
+The baseline is the resyn2 *configuration* re-measured here, not a replay of
+`results/synth_resyn2_summary.csv` — the harness TCL adds `opt -purge`, a
+post-`dfflibmap` `opt`, and `splitnets`. gcd reproduces the CSV exactly; the
+other four are within 0.5% on area. Ratios are unaffected because both sides
+share the flow. `make_xlsx.py` writes the full comparison to its own sheet.
+
+A config is rejected (score `+inf`) if it fails or times out, `check -assert`
+fails, the port list or flop count changes, or a non-target metric degrades
+past `--leeway`.
 
 ### Per-design search effort and winning flow
 
@@ -72,95 +109,6 @@ Notably, gcd's and aes's winners both use the **`resyn2` flow itself** — the
 agent's gain there comes from running the baseline's own script twice
 (`resyn_loops: 2`) with a tightened delay target and extra coarse
 optimisation, not from a different mapper.
-
----
-
-## Scoring: the baseline and the agent are measured identically
-
-This is the part that makes the table above meaningful, so it is worth being
-explicit about.
-
-### The formula
-
-```
-score = w_delay × (delay / delay_base) + w_area × (area / area_base)
-```
-
-Lower is better. Weights are per-design, proposed by the `profiler` agent
-(gcd, aes, jpeg, bp_fe_top ran 0.75/0.25; dynamic_node 0.60/0.40).
-
-### How the resyn2 baseline's score is computed
-
-It is **not** assigned, and it is **not** read out of the CSV. The baseline is
-synthesised as a real run, through the same harness, and its own metrics become
-the denominators — so substituting them into the formula gives
-
-```
-score_base = w_delay × (delay_base / delay_base) + w_area × (area_base / area_base)
-           = w_delay + w_area
-           = 1.0000
-```
-
-The baseline scores exactly 1.000 **by construction**, which is why the whole
-right-hand column reads as a direct fraction of baseline cost.
-
-### Why the two are comparable
-
-Baseline and candidate runs go through the **same `harness/synth_templated.tcl`,
-in the same process shape, with the same metric extraction**. Diffing the
-recorded environment of the aes baseline against the aes winner shows the only
-differences are the knob-driven variables:
-
-```
-  YA_EXTRA_OPT   ""            ->  "share; opt -full; opt -fast"
-  YA_ABC_D       820           ->  656
-  YA_ABC_SCRIPT  <resyn2 x1>   ->  <resyn2 x2 + topo;dnsize;upsize>
-  YA_OUT_V       .../baseline  ->  .../iter4/run01_llm3_1
-```
-
-Everything else — liberty file, additional libs, Verilog file list, include
-dirs, top module, `-flatten`, adder map, ABC mode, constraint file — is
-byte-identical, and both logs contain the same two `LTP` passes and one `stime`
-call. Each run's exact environment is saved to `work/<design>/**/env.json`, so
-this is auditable rather than asserted.
-
-Concretely, every design's recorded score reproduces from its own two ratios:
-
-| Design | w_delay × delay_ratio | + w_area × area_ratio | = score |
-|---|---|---|---|
-| gcd | 0.75 × 0.5047 | 0.25 × 1.0237 | **0.6345** |
-| aes | 0.75 × 0.3297 | 0.25 × 1.0283 | **0.5043** |
-| jpeg | 0.75 × 0.1213 | 0.25 × 1.0008 | **0.3412** |
-| dynamic_node | 0.60 × 0.2928 | 0.40 × 0.9939 | **0.5732** |
-| bp_fe_top | 0.75 × 0.0489 | 0.25 × 0.9369 | **0.2709** |
-
-### One honest gap in the baseline
-
-The baseline is the resyn2 *configuration* re-measured here, not a replay of
-the CSV's exact numbers. The harness TCL is not byte-identical to the original
-`run_sweep.sh` — it adds `opt -purge` after `synth`, an `opt` after
-`dfflibmap`, and `splitnets` before writing. Same ABC script, same `-D`,
-slightly different surrounding flow. Agreement with the CSV:
-
-| Design | CSV cells | Measured | CSV area | Measured | Δ area | Matches |
-|---|---:|---:|---:|---:|---:|---|
-| gcd | 362 | 362 | 460.18 | 460.18 | 0.00% | **yes** |
-| aes | 12,010 | 12,086 | 14,018.73 | 14,086.03 | 0.48% | no |
-| jpeg | 74,711 | 74,546 | 92,064.73 | 91,928.80 | 0.15% | no |
-| dynamic_node | 11,363 | 11,355 | 20,819.29 | 20,835.78 | 0.08% | no |
-| bp_fe_top | 35,259 | 35,217 | 49,998.96 | 49,989.38 | 0.02% | no |
-
-Only gcd reproduces exactly. The others are within 0.5%. Because baseline and
-candidates share the identical flow, the **ratios** — and therefore the scores
-— are unaffected; what differs is that the baseline column is this harness's
-measurement rather than a copy of the CSV row. `make_xlsx.py` writes this
-comparison to its own sheet so it cannot be quietly forgotten.
-
-### Rejection rules
-
-A config scores `None` (treated as `+inf`) when it fails or times out,
-`check -assert` fails, the port list or flop count differs from the baseline,
-or a non-target metric degrades past `--leeway`.
 
 ---
 
