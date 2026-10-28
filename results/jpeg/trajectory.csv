@@ -1,0 +1,24 @@
+label,status,score,delay_ps,area_um2,cells,seq_cells,logic_depth,delay_ratio,area_ratio,wall_s,reject_reason,flatten,extra_opt,abc_D_scale,resyn_loops,use_dch,abc_flow,mapper,post,adder_map
+baseline,OK,1.0,9312.47,91928.802,74546,4376,35,1.0,1.0,137.8,,,,,,,,,,
+rule_R-001,OK,,8118.06,101320.198,89760,4376,32,0.8717,1.1022,211.72,area degraded 10.2% > 5%,True,,0.75,1,True,resyn2,&nf,,False
+rule_R-005,ERROR,,,,,,,,,376.38,error,True,,0.6,1,True,resyn2,map -a,buffer;upsize;dnsize,True
+rule_R-007,OK,,829.76,100003.232,78468,4376,34,0.0891,1.0878,224.57,area degraded 8.8% > 5%,True,,0.85,1,True,resyn2,&nf,buffer;upsize;dnsize,False
+rule_R-008,OK,,845.28,100006.956,82725,4376,32,0.0908,1.0879,205.1,area degraded 8.8% > 5%,True,,0.8,1,False,resyn2,map,topo;dnsize;upsize,False
+rule_R-009,OK,,801.94,103945.884,83576,4376,32,0.0861,1.1307,223.49,area degraded 13.1% > 5%,True,,0.8,1,True,resyn2,&nf,buffer;upsize;dnsize,False
+resyn2_ref,OK,1.0,9312.47,91928.802,74546,4376,35,1.0,1.0,206.89,,True,,1.0,1,False,resyn2,map,,False
+speed_dch,OK,0.341193,1129.88,92000.888,65521,4376,31,0.1213,1.0008,226.11,,True,opt -full,0.85,2,True,dch_map,&nf,buffer;upsize;dnsize,False
+speed_hard,OK,,1105.5,90354.082,64899,4385,29,0.1187,0.9829,286.01,flop count changed (4376 -> 4385),True,opt -full; share; opt -fast,0.7,3,True,dch_map,&nf,buffer;upsize;dnsize,True
+llm0_0,OK,,806.91,103088.034,85360,4376,33,0.0866,1.1214,262.3,area degraded 12.1% > 5%,True,opt -full,0.8,2,True,resyn2,&nf,buffer;upsize;dnsize,False
+llm0_1,OK,,789.82,107250.136,92707,4376,33,0.0848,1.1667,266.71,area degraded 16.7% > 5%,True,opt -full,0.75,2,True,resyn2,&nf,buffer;upsize;dnsize,False
+llm0_2,OK,,851.28,99994.454,77509,4376,34,0.0914,1.0877,260.14,area degraded 8.8% > 5%,True,opt -full,0.9,2,True,resyn2,&nf,buffer;upsize;dnsize,False
+llm0_3,OK,,834.21,101937.052,80945,4376,34,0.0896,1.1089,290.35,area degraded 10.9% > 5%,True,opt -full,0.85,3,True,resyn2,&nf,buffer;upsize;dnsize,False
+llm0_4,OK,,828.78,100680.468,80313,4382,35,0.089,1.0952,255.32,flop count changed (4376 -> 4382),True,opt -full; alumacc; opt -fast,0.85,2,True,resyn2,&nf,buffer;upsize;dnsize,False
+llm0_5,OK,,860.14,96899.81,79585,4376,33,0.0924,1.0541,263.49,area degraded 5.4% > 5%,True,opt -full,0.85,2,True,resyn2,&nf,topo;dnsize;upsize,False
+llm0_6,OK,,806.91,103088.034,85360,4376,33,0.0866,1.1214,268.27,area degraded 12.1% > 5%,True,share; opt -full; opt -fast,0.8,2,True,resyn2,map -B 0.9,buffer;upsize;dnsize,False
+llm0_7,OK,,825.44,100515.282,80578,4376,33,0.0886,1.0934,261.19,area degraded 9.3% > 5%,True,opt -full,0.85,2,False,resyn2,&nf,buffer;upsize;dnsize,False
+relaxed,OK,,852.69,100454.368,77025,4376,35,0.0916,1.0927,232.57,area degraded 9.3% > 5%,True,opt -full,0.9,1,False,resyn2,&nf,buffer;upsize;dnsize,False
+relaxed,OK,,840.28,99095.374,78063,4376,35,0.0902,1.078,231.22,area degraded 7.8% > 5%,True,opt -full,0.875,1,False,resyn2,&nf,buffer;upsize;dnsize,False
+relaxed,OK,,891.31,98716.856,76322,4376,37,0.0957,1.0738,229.23,area degraded 7.4% > 5%,True,opt -full,0.95,1,False,resyn2,&nf,buffer;upsize;dnsize,False
+relaxed,OK,,881.11,98906.78,76546,4376,36,0.0946,1.0759,229.7,area degraded 7.6% > 5%,True,opt -full,0.925,1,False,resyn2,&nf,buffer;upsize;dnsize,False
+relaxed,OK,,883.58,98850.122,76286,4376,37,0.0949,1.0753,165.42,area degraded 7.5% > 5%,True,opt -full,0.9375,1,False,resyn2,&nf,buffer;upsize;dnsize,False
+relaxed,OK,,914.58,97954.5,76264,4376,38,0.0982,1.0655,141.85,area degraded 6.6% > 5%,True,opt -full,0.9688,1,False,resyn2,&nf,buffer;upsize;dnsize,False

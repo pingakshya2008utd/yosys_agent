@@ -1,0 +1,98 @@
+{
+  "design": "bp_fe_top",
+  "status": "OK",
+  "tier": "small",
+  "top": "bp_fe_top",
+  "clk_ns": 1.62,
+  "rtl_lines": 14008,
+  "profile": {
+    "size_class": "small",
+    "dominant_style": "memory",
+    "arithmetic_hint": false,
+    "recommended_goal_weights": {
+      "delay": 0.75,
+      "area": 0.25
+    },
+    "rationale": "The BlackParrot front-end is a ~14k-line block that instantiates SRAM macros for its caches/predictor tables around mostly control and lookup logic, and its 1.62 ns clock is tight enough to prioritize delay."
+  },
+  "weights": {
+    "delay": 0.75,
+    "area": 0.25
+  },
+  "leeway": 0.05,
+  "retrieved_rules": [
+    "R-007",
+    "R-001"
+  ],
+  "baseline_mode": "resyn2",
+  "baseline_csv_crosscheck": {
+    "csv_cells": 35259,
+    "measured_cells": 35217,
+    "csv_area": 49998.956,
+    "measured_area": 49989.38,
+    "csv_flops": 4315,
+    "measured_flops": 4315,
+    "csv_logic_depth": 385,
+    "measured_logic_depth": 385,
+    "area_delta_pct": 0.02,
+    "matches_csv": false
+  },
+  "baseline": {
+    "abc_delay_ps": 32445.4,
+    "chip_area": 49989.38,
+    "cell_count": 35217,
+    "seq_cells": 4315,
+    "logic_depth": 385,
+    "wall_time_s": 81.45
+  },
+  "best": {
+    "config": {
+      "flatten": true,
+      "extra_opt": "opt -full",
+      "abc_D_scale": 0.8,
+      "resyn_loops": 4,
+      "use_dch": true,
+      "abc_flow": "syn2_if",
+      "mapper": "&nf",
+      "post": "buffer;upsize;dnsize",
+      "adder_map": false
+    },
+    "score": 0.270937,
+    "delay_ps": 1588.17,
+    "area_um2": 46835.152,
+    "cells": 27217,
+    "logic_depth": 35,
+    "delay_ratio": 0.0489,
+    "area_ratio": 0.9369,
+    "label": "ei2",
+    "rundir": "/home/ubuntu/chisage/yosys-agent/work/bp_fe_top/iter3/run03_ei2"
+  },
+  "verifier": {
+    "verdict": "accept_unverified",
+    "reasons": [
+      "check -assert passed",
+      "ports and sequential cell counts match baseline",
+      "delay improvement correlates with proportional logic depth reduction (385->35) and area also decreased, consistent with real optimization, not a trivial mapping artifact"
+    ],
+    "unverified": [
+      "Functional equivalence not verified via SAT miter (design too large)"
+    ]
+  },
+  "n_synth_runs": 41,
+  "n_accepted": 35,
+  "iterations_run": 5,
+  "best_score_by_iteration": [
+    0.280431,
+    0.280431,
+    0.280431,
+    0.270937,
+    0.270937
+  ],
+  "iterations_to_best": 4,
+  "agent_wallclock_s": 1806.7,
+  "baseline_wallclock_s": 81.45,
+  "per_run_timeout_s": 651,
+  "rules_added": [
+    "R-009"
+  ]
+}

@@ -1,0 +1,238 @@
+{
+  "_comment": "Cross-design rule library. Seeded with priors; the orchestrator appends at most 2 learned rules per design and evicts the lowest-confidence rule past 25. Seeded entries carry no evidence and low confidence on purpose - they are hypotheses to test, not measurements.",
+  "max_rules": 25,
+  "rules": [
+    {
+      "id": "R-001",
+      "applies_to": {
+        "size_class": [
+          "tiny",
+          "small",
+          "medium"
+        ],
+        "dominant_style": [
+          "datapath"
+        ]
+      },
+      "knob_delta": {
+        "abc_D_scale": 0.75,
+        "use_dch": true,
+        "mapper": "&nf"
+      },
+      "goal": "delay",
+      "evidence": [],
+      "confidence": 0.5,
+      "note": "SEEDED PRIOR, UNMEASURED. Over-constraining ABC plus choice computation is expected to buy delay on arithmetic-heavy designs at some area cost."
+    },
+    {
+      "id": "R-002",
+      "applies_to": {
+        "size_class": [
+          "tiny",
+          "small"
+        ],
+        "dominant_style": [
+          "control"
+        ]
+      },
+      "knob_delta": {
+        "mapper": "map -B 0.9",
+        "post": "topo;dnsize",
+        "abc_D_scale": 1.05
+      },
+      "goal": "area",
+      "evidence": [],
+      "confidence": 0.45,
+      "note": "SEEDED PRIOR, UNMEASURED. Mirrors this platform's ORFS abc_area.script, which biases the classic mapper toward area."
+    },
+    {
+      "id": "R-003",
+      "applies_to": {
+        "arithmetic_hint": true
+      },
+      "knob_delta": {
+        "adder_map": true,
+        "extra_opt": "opt -full; alumacc; opt -fast"
+      },
+      "goal": "both",
+      "evidence": [],
+      "confidence": 0.4,
+      "note": "SEEDED PRIOR, UNMEASURED. Adder extraction plus alumacc should help designs with real adder/multiplier content."
+    },
+    {
+      "id": "R-004",
+      "applies_to": {
+        "size_class": [
+          "large"
+        ]
+      },
+      "knob_delta": {
+        "flatten": false,
+        "resyn_loops": 1,
+        "use_dch": false
+      },
+      "goal": "both",
+      "evidence": [],
+      "confidence": 0.4,
+      "note": "SEEDED PRIOR, UNMEASURED. On large designs the binding constraint is memory and runtime, not mapping quality."
+    },
+    {
+      "id": "R-005",
+      "applies_to": {
+        "size_class": [
+          "tiny"
+        ],
+        "dominant_style": [
+          "datapath"
+        ]
+      },
+      "knob_delta": {
+        "abc_D_scale": 0.6,
+        "use_dch": true,
+        "mapper": "map -a",
+        "post": "buffer;upsize;dnsize",
+        "adder_map": true
+      },
+      "goal": "delay",
+      "evidence": [
+        {
+          "design": "gcd",
+          "delta_score": -0.3655
+        }
+      ],
+      "confidence": 0.6,
+      "note": "MEASURED on gcd: score 0.6345 vs baseline 1.0"
+    },
+    {
+      "id": "R-006",
+      "applies_to": {
+        "size_class": [
+          "tiny"
+        ],
+        "dominant_style": [
+          "datapath"
+        ]
+      },
+      "knob_delta": {
+        "abc_flow": "dch_map"
+      },
+      "goal": "avoid",
+      "evidence": [
+        {
+          "design": "gcd",
+          "mean_score": 1.0835
+        }
+      ],
+      "confidence": 0.5,
+      "note": "MEASURED NEGATIVE on gcd: abc_flow=dch_map averaged 1.084 (worse than baseline)."
+    },
+    {
+      "id": "R-007",
+      "applies_to": {
+        "size_class": [
+          "small"
+        ],
+        "dominant_style": [
+          "control"
+        ]
+      },
+      "knob_delta": {
+        "abc_D_scale": 0.85,
+        "use_dch": true,
+        "mapper": "&nf",
+        "post": "buffer;upsize;dnsize",
+        "adder_map": false
+      },
+      "goal": "delay",
+      "evidence": [
+        {
+          "design": "dynamic_node",
+          "delta_score": -0.4268
+        }
+      ],
+      "confidence": 0.6,
+      "note": "MEASURED on dynamic_node: score 0.5732 vs baseline 1.0"
+    },
+    {
+      "id": "R-008",
+      "applies_to": {
+        "size_class": [
+          "tiny"
+        ],
+        "dominant_style": [
+          "datapath"
+        ]
+      },
+      "knob_delta": {
+        "abc_D_scale": 0.8,
+        "use_dch": false,
+        "mapper": "map",
+        "post": "topo;dnsize;upsize",
+        "adder_map": false
+      },
+      "goal": "delay",
+      "evidence": [
+        {
+          "design": "aes",
+          "delta_score": -0.4957
+        }
+      ],
+      "confidence": 0.6,
+      "note": "MEASURED on aes: score 0.5043 vs baseline 1.0"
+    },
+    {
+      "id": "R-009",
+      "applies_to": {
+        "size_class": [
+          "small"
+        ],
+        "dominant_style": [
+          "memory"
+        ]
+      },
+      "knob_delta": {
+        "abc_D_scale": 0.8,
+        "use_dch": true,
+        "mapper": "&nf",
+        "post": "buffer;upsize;dnsize",
+        "adder_map": false
+      },
+      "goal": "delay",
+      "evidence": [
+        {
+          "design": "bp_fe_top",
+          "delta_score": -0.7291
+        }
+      ],
+      "confidence": 0.6,
+      "note": "MEASURED on bp_fe_top: score 0.2709 vs baseline 1.0"
+    },
+    {
+      "id": "R-010",
+      "applies_to": {
+        "size_class": [
+          "small"
+        ],
+        "dominant_style": [
+          "datapath"
+        ]
+      },
+      "knob_delta": {
+        "abc_D_scale": 0.85,
+        "use_dch": true,
+        "mapper": "&nf",
+        "post": "buffer;upsize;dnsize",
+        "adder_map": false
+      },
+      "goal": "delay",
+      "evidence": [
+        {
+          "design": "jpeg",
+          "delta_score": -0.6588
+        }
+      ],
+      "confidence": 0.6,
+      "note": "MEASURED on jpeg: score 0.3412 vs baseline 1.0"
+    }
+  ]
+}

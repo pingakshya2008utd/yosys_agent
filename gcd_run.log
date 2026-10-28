@@ -1,0 +1,61 @@
+
+========================================================================
+gcd  (tier=tiny, K=8, N=3, parallel=4)
+========================================================================
+  top=gcd  clk=0.25ns  rtl_lines=757  srams=0
+  profile: tiny/datapath arith=True - GCD is a tiny single-file datapath with subtract/compare arithmetic under a very tight 0.25 ns clock, so adder mapping and delay-weighted effort matter most.
+  weights: delay=0.80 area=0.20  leeway=2%
+  retrieved rules: ['R-001']
+  measuring baseline (stock ORFS ABC script)...
+    delay=610.11 ps  area=516.838 um2  cells=339  depth=20  (1.09s)
+  per-run timeout: 90s (max(90, 8x baseline 1.09s), capped at 120s)
+
+  --- iteration 0: 8 runs ---
+    lhs                score=0.8465 d=0.8089 a=0.9969  1.95s
+    speed_dch          score=1.0119 d=1.048 a=0.8677  2.0s
+    speed_hard         score=1.0388 d=1.0807 a=0.8713  2.1s
+    plain_map          score=1.0761 d=1.1274 a=0.8713  1.78s
+    rule_R-001         score=1.2252 d=1.345 a=0.7463  1.8s
+    area_map           score=1.3093 d=1.4236 a=0.8523  1.86s
+    balanced           REJECT(area degraded 15.6% > 2%)  2.14s
+    lhs                REJECT(flop count changed (35 -> 34))  3.72s
+
+  --- iteration 1: 8 runs ---
+    llm0_2             score=0.8457 d=0.811 a=0.9846  2.19s
+    llm0_6             score=0.8457 d=0.811 a=0.9846  2.09s
+    llm0_0             score=0.8465 d=0.8089 a=0.9969  2.0s
+    llm0_1             score=0.8465 d=0.8089 a=0.9969  1.93s
+    llm0_4             score=0.8465 d=0.8089 a=0.9969  1.95s
+    llm0_7             score=0.9594 d=0.9621 a=0.9485  1.89s
+    llm0_3             score=1.1204 d=1.1866 a=0.8559  2.13s
+    llm0_5             REJECT(area degraded 12.7% > 2%)  1.92s
+
+  --- iteration 2: 8 runs ---
+    llm1_0             score=0.8384 d=0.7931 a=1.0196  2.1s
+    llm1_1             score=0.8457 d=0.811 a=0.9846  2.28s
+    llm1_2             score=0.8457 d=0.811 a=0.9846  2.27s
+    llm1_4             score=0.8457 d=0.811 a=0.9846  2.25s
+    llm1_7             score=0.8457 d=0.811 a=0.9846  2.02s
+    llm1_5             score=1.0119 d=1.048 a=0.8677  1.92s
+    llm1_3             score=1.3942 d=1.5222 a=0.8821  1.95s
+    llm1_6             REJECT(flop count changed (35 -> 34))  3.64s
+
+  --- iteration 3: 8 runs ---
+    llm2_0             score=0.8384 d=0.7931 a=1.0196  2.09s
+    llm2_1             score=0.8384 d=0.7931 a=1.0196  2.07s
+    llm2_2             score=0.8384 d=0.7931 a=1.0196  2.09s
+    llm2_4             score=0.8384 d=0.7931 a=1.0196  2.07s
+    llm2_7             score=0.8384 d=0.7931 a=1.0196  2.11s
+    llm2_6             score=0.8457 d=0.811 a=0.9846  2.27s
+    llm2_3             REJECT(area degraded 2.5% > 2%)  2.17s
+    llm2_5             REJECT(area degraded 2.6% > 2%)  2.0s
+  verifier: accept_unverified - Mechanical checks passed: assert, ports, seq cell counts match baseline; Area and cell count increased alongside delay improvement, indicating real remapping rather than a no-op
+
+  best score 0.8384
+  rules learned: ['R-005', 'R-006']
+  artifacts: /home/ubuntu/chisage/yosys-agent/results/gcd/best_config.json, /home/ubuntu/chisage/yosys-agent/results/gcd/trajectory.csv
+
+========================================================================
+report: /home/ubuntu/chisage/yosys-agent/results/summary.md
+llm usage: {"llm_calls": 5, "by_model": {"claude-opus-5": {"input": 24570, "output": 4298, "cache_read": 0}, "claude-sonnet-5": {"input": 1053, "output": 287, "cache_read": 0}}, "est_cost_usd": 0.2353}
+  gcd            OK             score 0.8384

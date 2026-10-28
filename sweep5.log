@@ -1,0 +1,320 @@
+
+========================================================================
+gcd  (tier=tiny, K=8, N=4, parallel=4)
+========================================================================
+  top=gcd  clk=0.25ns  rtl_lines=757  srams=0
+  profile: tiny/datapath arith=True - GCD is a small subtract/compare datapath loop with an aggressive 0.25 ns clock, so adder mapping and delay-weighted effort matter most.
+  weights: delay=0.75 area=0.25  leeway=5%
+  retrieved rules: ['R-001']
+  measuring baseline (validated resyn2 script)...
+    delay=644.27 ps  area=460.18 um2  cells=362  depth=12  (1.25s)
+    cross-check: MATCHES resyn2 CSV (cells 362 vs 362, area 460.18 vs 460.18, flops 35 vs 35, depth 12 vs 12)
+  per-run timeout: 90s (max(90, 8x baseline 1.25s), capped at 120s)
+
+  --- iteration 0: 8 runs ---
+    speed_dch          score=0.9879 d=0.9924 a=0.9746  1.91s
+    lhs                score=0.9906 d=0.9776 a=1.0295  2.2s
+    rule_R-001         score=1.0000 d=1.0 a=1.0  1.86s
+    resyn2_ref         score=1.0000 d=1.0 a=1.0  1.84s
+    speed_hard         score=1.0122 d=1.0234 a=0.9786  2.24s
+    area_map           score=1.2504 d=1.3481 a=0.9572  1.78s
+    orfs_speed_like    REJECT(area degraded 8.9% > 5%)  2.18s
+    balanced           REJECT(area degraded 29.8% > 5%)  2.16s
+
+  --- iteration 1: 8 runs ---
+    llm0_5             score=0.8798 d=0.8566 a=0.9491  1.94s
+    llm0_6             score=0.8798 d=0.8566 a=0.9491  1.9s
+    llm0_0             REJECT(area degraded 13.7% > 5%)  2.05s
+    llm0_1             REJECT(area degraded 13.7% > 5%)  2.0s
+    llm0_2             REJECT(area degraded 9.5% > 5%)  2.19s
+    llm0_3             REJECT(area degraded 13.7% > 5%)  2.05s
+    llm0_4             REJECT(area degraded 13.7% > 5%)  1.96s
+    llm0_7             REJECT(flop count changed (35 -> 34))  4.06s
+
+  --- iteration 2: 8 runs ---
+    llm1_6             score=0.8669 d=0.842 a=0.9416  2.01s
+    llm1_0             score=0.8798 d=0.8566 a=0.9491  1.93s
+    llm1_2             score=0.8798 d=0.8566 a=0.9491  1.91s
+    llm1_3             score=0.8798 d=0.8566 a=0.9491  1.88s
+    llm1_5             score=0.8798 d=0.8566 a=0.9491  1.88s
+    llm1_1             score=0.9339 d=0.9221 a=0.9694  1.97s
+    llm1_4             score=0.9339 d=0.9221 a=0.9694  1.93s
+    llm1_7             REJECT(flop count changed (35 -> 34))  3.53s
+
+  --- iteration 3: 8 runs ---
+    llm2_0             score=0.8669 d=0.842 a=0.9416  2.09s
+    llm2_1             score=0.8669 d=0.842 a=0.9416  2.23s
+    llm2_3             score=0.8669 d=0.842 a=0.9416  2.21s
+    llm2_4             score=0.8669 d=0.842 a=0.9416  2.09s
+    llm2_5             score=0.8669 d=0.842 a=0.9416  2.07s
+    llm2_7             score=0.8669 d=0.842 a=0.9416  2.1s
+    llm2_2             score=0.8778 d=0.8569 a=0.9405  2.14s
+    llm2_6             REJECT(area degraded 8.9% > 5%)  2.19s
+
+  --- iteration 4: 8 runs ---
+    llm3_5             score=0.6345 d=0.5047 a=1.0237  2.55s
+    llm3_2             score=0.8442 d=0.8111 a=0.9434  2.09s
+    llm3_0             score=0.8669 d=0.842 a=0.9416  2.1s
+    llm3_1             score=0.8669 d=0.842 a=0.9416  2.16s
+    llm3_3             score=0.8669 d=0.842 a=0.9416  2.2s
+    llm3_4             score=0.8669 d=0.842 a=0.9416  2.53s
+    llm3_6             score=0.8669 d=0.842 a=0.9416  2.37s
+    llm3_7             score=0.8778 d=0.8569 a=0.9405  2.58s
+  verifier: accept_unverified - check -assert passed, ports and sequential cell counts match baseline; delay improvement correlates with increased logic depth (12->14) and slightly higher area, consistent with a real remap rather than a no-op
+
+  best score 0.6345
+  rules learned: ['R-005', 'R-006']
+  artifacts: /home/ubuntu/chisage/yosys-agent/results/gcd/best_config.json, /home/ubuntu/chisage/yosys-agent/results/gcd/trajectory.csv
+
+========================================================================
+dynamic_node  (tier=small, K=8, N=4, parallel=4)
+========================================================================
+  top=dynamic_node_top_wrap  clk=2.0ns  rtl_lines=6251  srams=0
+  profile: small/control arith=False - At 6251 RTL lines with no macros, dynamic_node is a small NoC router dominated by routing/arbitration FSMs and mux-heavy control logic rather than wide arithmetic, though its 2.0 ns clock still warrants a delay-leaning weighting.
+  weights: delay=0.60 area=0.40  leeway=5%
+  retrieved rules: ['R-002', 'R-001']
+  measuring baseline (validated resyn2 script)...
+    delay=2622.29 ps  area=20835.78 um2  cells=11355  depth=30  (15.17s)
+    cross-check: DIFFERS FROM resyn2 CSV (cells 11355 vs 11363, area 20835.78 vs 20819.29, flops 2257 vs 2257, depth 30 vs 31)
+  per-run timeout: 121s (max(90, 8x baseline 15.17s), capped at 900s)
+
+  --- iteration 0: 8 runs ---
+    speed_dch          score=0.5732 d=0.2928 a=0.9939  28.53s
+    orfs_speed_like    score=0.5827 d=0.2935 a=1.0164  33.72s
+    balanced           score=0.5844 d=0.3 a=1.011  34.26s
+    speed_hard         score=0.5962 d=0.3341 a=0.9892  35.11s
+    rule_R-002         score=1.0000 d=1.0 a=1.0  23.39s
+    rule_R-001         score=1.0000 d=1.0 a=1.0  22.73s
+    resyn2_ref         score=1.0000 d=1.0 a=1.0  22.94s
+    area_map           REJECT(area degraded 9.6% > 5%)  25.89s
+
+  --- iteration 1: 8 runs ---
+    llm0_2             score=0.5767 d=0.2843 a=1.0152  27.46s
+    llm0_0             score=0.5835 d=0.2841 a=1.0326  28.69s
+    llm0_1             score=0.5835 d=0.2841 a=1.0326  28.43s
+    llm0_5             score=0.5835 d=0.2841 a=1.0326  27.99s
+    llm0_6             score=0.5835 d=0.2841 a=1.0326  27.95s
+    llm0_4             score=0.5896 d=0.2939 a=1.0332  32.54s
+    llm0_7             score=0.5896 d=0.2939 a=1.0332  31.07s
+    llm0_3             score=0.5905 d=0.3015 a=1.024  30.64s
+
+  --- iteration 2: 8 runs ---
+    llm1_0             score=0.5835 d=0.2841 a=1.0326  28.59s
+    llm1_1             score=0.5835 d=0.2841 a=1.0326  27.74s
+    llm1_2             score=0.5835 d=0.2841 a=1.0326  27.69s
+    llm1_4             score=0.5835 d=0.2841 a=1.0326  28.32s
+    llm1_6             score=0.5835 d=0.2841 a=1.0326  27.6s
+    llm1_7             score=0.5835 d=0.2841 a=1.0326  27.89s
+    llm1_3             score=0.5889 d=0.2969 a=1.027  32.03s
+    llm1_5             score=0.7881 d=0.6505 a=0.9944  27.11s
+
+  --- iteration 3: 8 runs ---
+    llm2_0             score=0.5835 d=0.2841 a=1.0326  28.48s
+    llm2_1             score=0.5835 d=0.2841 a=1.0326  28.54s
+    llm2_4             score=0.5835 d=0.2841 a=1.0326  28.09s
+    llm2_7             score=0.5843 d=0.3043 a=1.0043  29.6s
+    ei2                score=0.8120 d=0.6876 a=0.9987  24.55s
+    llm2_6             REJECT(flop count changed (2257 -> 2298))  18.14s
+    ei2                REJECT(flop count changed (2257 -> 2298))  20.81s
+    ei2                REJECT(flop count changed (2257 -> 2298))  20.41s
+  no improvement for 3 consecutive iterations - stopping.
+  verifier: accept_unverified - check -assert passed; ports and sequential cell counts match baseline
+
+  best score 0.5732
+  rules learned: ['R-007']
+  artifacts: /home/ubuntu/chisage/yosys-agent/results/dynamic_node/best_config.json, /home/ubuntu/chisage/yosys-agent/results/dynamic_node/trajectory.csv
+
+========================================================================
+aes  (tier=small, K=8, N=4, parallel=4)
+========================================================================
+  top=aes_cipher_top  clk=0.82ns  rtl_lines=1406  srams=0
+  profile: tiny/datapath arith=True - AES cipher core is a compact (1.4k-line) cipher datapath with wide regular XOR/sbox and key-schedule arithmetic under a tight 0.82 ns clock, so delay should dominate and adder mapping is worth searching.
+  weights: delay=0.75 area=0.25  leeway=5%
+  retrieved rules: ['R-005', 'R-001', 'R-006']
+  measuring baseline (validated resyn2 script)...
+    delay=1981.7 ps  area=14086.03 um2  cells=12086  depth=21  (26.57s)
+    cross-check: DIFFERS FROM resyn2 CSV (cells 12086 vs 12010, area 14086.03 vs 14018.73, flops 562 vs 562, depth 21 vs 22)
+  per-run timeout: 212s (max(90, 8x baseline 26.57s), capped at 900s)
+
+  --- iteration 0: 8 runs ---
+    rule_R-006         score=0.9642 d=0.9444 a=1.0238  28.33s
+    rule_R-001         score=0.9728 d=0.9638 a=0.9998  39.73s
+    resyn2_ref         score=1.0000 d=1.0 a=1.0  43.36s
+    rule_R-005         REJECT(area degraded 9.9% > 5%)  46.43s
+    speed_dch          REJECT(area degraded 7.8% > 5%)  38.71s
+    speed_hard         REJECT(area degraded 6.7% > 5%)  40.05s
+    orfs_speed_like    REJECT(area degraded 26.6% > 5%)  66.71s
+    area_map           REJECT(area degraded 12.9% > 5%)  37.33s
+
+  --- iteration 1: 8 runs ---
+    llm0_7             score=0.5308 d=0.3659 a=1.0252  35.64s
+    llm0_4             score=0.9357 d=0.9152 a=0.9974  38.78s
+    llm0_1             score=1.0000 d=0.9999 a=1.0  44.42s
+    llm0_0             score=1.0000 d=1.0 a=1.0  41.88s
+    llm0_2             score=1.0000 d=1.0 a=1.0  42.4s
+    llm0_3             score=1.0000 d=1.0 a=1.0  43.29s
+    llm0_5             score=1.0000 d=1.0 a=1.0  37.64s
+    llm0_6             REJECT(flop count changed (562 -> 530))  6.72s
+
+  --- iteration 2: 8 runs ---
+    llm1_2             score=0.5126 d=0.3397 a=1.0314  42.78s
+    llm1_6             score=0.5160 d=0.3437 a=1.033  35.8s
+    llm1_0             score=0.5308 d=0.3659 a=1.0252  40.19s
+    llm1_1             score=0.5308 d=0.3659 a=1.0252  38.99s
+    llm1_4             score=0.5308 d=0.3659 a=1.0252  36.88s
+    llm1_5             score=0.5308 d=0.3659 a=1.0252  37.57s
+    llm1_3             score=1.0000 d=1.0 a=1.0002  39.94s
+    llm1_7             REJECT(flop count changed (562 -> 530))  7.03s
+
+  --- iteration 3: 8 runs ---
+    llm2_0             score=0.5126 d=0.3397 a=1.0314  39.94s
+    llm2_1             score=0.5126 d=0.3397 a=1.0314  39.58s
+    llm2_3             score=0.5126 d=0.3397 a=1.0314  41.1s
+    llm2_4             score=0.5126 d=0.3397 a=1.0314  43.27s
+    llm2_5             score=0.5126 d=0.3397 a=1.0314  40.96s
+    llm2_7             score=0.5126 d=0.3397 a=1.0314  40.49s
+    llm2_6             score=0.5190 d=0.3499 a=1.0263  46.43s
+    llm2_2             score=0.5213 d=0.3592 a=1.0076  45.99s
+
+  --- iteration 4: 8 runs ---
+    llm3_1             score=0.5043 d=0.3297 a=1.0283  43.35s
+    llm3_0             score=0.5126 d=0.3397 a=1.0314  40.41s
+    llm3_3             score=0.5126 d=0.3397 a=1.0314  40.11s
+    llm3_5             score=0.5126 d=0.3397 a=1.0314  42.77s
+    llm3_7             score=0.5213 d=0.3592 a=1.0076  45.1s
+    llm3_2             score=0.5224 d=0.3551 a=1.0244  51.71s
+    llm3_6             score=0.5260 d=0.3519 a=1.0485  43.45s
+    llm3_4             score=0.9356 d=0.9152 a=0.9969  42.02s
+  verifier: reject - Delay improved drastically (0.33x) while logic_depth remained exactly unchanged (21) and area changed only marginally (+2.8%), which is the suspicious pattern indicating the mapping likely did not meaningfully change despite the reported delay drop; No SAT miter was run to verify functional equivalence, leaving the large metric change unverified
+
+  best score 0.5043
+  rules learned: ['R-008']
+  artifacts: /home/ubuntu/chisage/yosys-agent/results/aes/best_config.json, /home/ubuntu/chisage/yosys-agent/results/aes/trajectory.csv
+
+========================================================================
+bp_fe_top  (tier=small, K=8, N=4, parallel=4)
+========================================================================
+  top=bp_fe_top  clk=1.62ns  rtl_lines=14008  srams=3
+  profile: small/memory arith=False - The BlackParrot front-end is a ~14k-line block that instantiates SRAM macros for its caches/predictor tables around mostly control and lookup logic, and its 1.62 ns clock is tight enough to prioritize delay.
+  weights: delay=0.75 area=0.25  leeway=5%
+  retrieved rules: ['R-007', 'R-001']
+  measuring baseline (validated resyn2 script)...
+    delay=32445.4 ps  area=49989.38 um2  cells=35217  depth=385  (81.45s)
+    cross-check: DIFFERS FROM resyn2 CSV (cells 35217 vs 35259, area 49989.38 vs 49998.96, flops 4315 vs 4315, depth 385 vs 385)
+  per-run timeout: 651s (max(90, 8x baseline 81.45s), capped at 900s)
+
+  --- iteration 0: 8 runs ---
+    orfs_speed_like    score=0.2804 d=0.059 a=0.9447  170.19s
+    balanced           score=0.4985 d=0.3495 a=0.9456  153.53s
+    area_map           score=0.5678 d=0.4229 a=1.0028  129.84s
+    speed_hard         score=0.8648 d=0.8322 a=0.9627  155.77s
+    speed_dch          score=0.8650 d=0.8314 a=0.9658  142.71s
+    rule_R-001         score=1.0000 d=1.0 a=1.0  127.77s
+    resyn2_ref         score=1.0000 d=1.0 a=1.0  124.3s
+    rule_R-007         REJECT(area degraded 5.1% > 5%)  133.17s
+
+  --- iteration 1: 8 runs ---
+    llm0_2             score=0.3849 d=0.1782 a=1.005  155.64s
+    llm0_1             score=0.3905 d=0.1723 a=1.0451  168.44s
+    llm0_6             score=0.3906 d=0.1723 a=1.0455  150.84s
+    llm0_0             score=0.3908 d=0.1723 a=1.0461  156.16s
+    llm0_3             score=0.3908 d=0.1723 a=1.0461  159.49s
+    llm0_4             score=0.3908 d=0.1723 a=1.0461  159.68s
+    llm0_5             score=0.3908 d=0.1723 a=1.0461  165.11s
+    llm0_7             REJECT(flop count changed (4315 -> 4391))  111.99s
+
+  --- iteration 2: 8 runs ---
+    llm1_7             score=0.3882 d=0.1782 a=1.0181  156.68s
+    llm1_2             score=0.3905 d=0.1723 a=1.0451  168.2s
+    llm1_3             score=0.3906 d=0.1723 a=1.0455  140.59s
+    llm1_0             score=0.3908 d=0.1723 a=1.0461  155.75s
+    llm1_1             score=0.3908 d=0.1723 a=1.0461  159.43s
+    llm1_5             score=0.3908 d=0.1723 a=1.0461  154.13s
+    llm1_6             score=0.3908 d=0.1723 a=1.0461  159.94s
+    llm1_4             score=0.9992 d=1.0 a=0.9969  155.1s
+
+  --- iteration 3: 8 runs ---
+    ei2                score=0.2709 d=0.0489 a=0.9369  197.71s
+    ei2                score=0.3385 d=0.1496 a=0.9051  179.58s
+    llm2_6             score=0.3882 d=0.1782 a=1.0181  169.52s
+    llm2_7             score=0.3900 d=0.1723 a=1.0429  191.42s
+    llm2_2             score=0.3908 d=0.1723 a=1.0461  167.45s
+    ei2                REJECT(flop count changed (4315 -> 4391))  147.15s
+    ei2                REJECT(flop count changed (4315 -> 4391))  151.42s
+    ei2                REJECT(flop count changed (4315 -> 4391))  155.77s
+
+  --- iteration 4: 8 runs ---
+    llm3_4             score=0.3882 d=0.1782 a=1.0181  157.39s
+    llm3_6             score=0.3882 d=0.1782 a=1.0181  163.17s
+    llm3_5             score=0.3900 d=0.1723 a=1.0429  169.32s
+    llm3_0             score=0.3905 d=0.1723 a=1.0451  162.98s
+    llm3_1             score=0.3905 d=0.1723 a=1.0451  163.37s
+    llm3_2             score=0.3905 d=0.1723 a=1.0451  169.84s
+    llm3_3             score=0.3905 d=0.1723 a=1.0451  163.94s
+    llm3_7             score=0.3906 d=0.1723 a=1.0455  143.29s
+  verifier: accept_unverified - check -assert passed; ports and sequential cell counts match baseline
+
+  best score 0.2709
+  rules learned: ['R-009']
+  artifacts: /home/ubuntu/chisage/yosys-agent/results/bp_fe_top/best_config.json, /home/ubuntu/chisage/yosys-agent/results/bp_fe_top/trajectory.csv
+
+========================================================================
+jpeg  (tier=small, K=8, N=4, parallel=4)
+========================================================================
+  top=jpeg_encoder  clk=1.0ns  rtl_lines=2585  srams=0
+  profile: small/datapath arith=True - A 2.6k-line JPEG encoder is dominated by DCT/quantization arithmetic (adders and multipliers) under a tight 1.0 ns clock, so adder mapping and delay-weighted search should dominate.
+  weights: delay=0.75 area=0.25  leeway=5%
+  retrieved rules: ['R-001', 'R-005', 'R-007', 'R-008', 'R-009']
+  measuring baseline (validated resyn2 script)...
+    delay=9312.47 ps  area=91928.802 um2  cells=74546  depth=35  (137.8s)
+    cross-check: DIFFERS FROM resyn2 CSV (cells 74546 vs 74711, area 91928.80 vs 92064.73, flops 4376 vs 4383, depth 35 vs 35)
+  per-run timeout: 900s (max(90, 8x baseline 137.8s), capped at 900s)
+
+  --- iteration 0: 8 runs ---
+    speed_dch          score=0.3412 d=0.1213 a=1.0008  226.11s
+    resyn2_ref         score=1.0000 d=1.0 a=1.0  206.89s
+    rule_R-001         REJECT(area degraded 10.2% > 5%)  211.72s
+    rule_R-005         REJECT(error)  376.38s
+    rule_R-007         REJECT(area degraded 8.8% > 5%)  224.57s
+    rule_R-008         REJECT(area degraded 8.8% > 5%)  205.1s
+    rule_R-009         REJECT(area degraded 13.1% > 5%)  223.49s
+    speed_hard         REJECT(flop count changed (4376 -> 4385))  286.01s
+
+  --- iteration 1: 8 runs ---
+    llm0_0             REJECT(area degraded 12.1% > 5%)  262.3s
+    llm0_1             REJECT(area degraded 16.7% > 5%)  266.71s
+    llm0_2             REJECT(area degraded 8.8% > 5%)  260.14s
+    llm0_3             REJECT(area degraded 10.9% > 5%)  290.35s
+    llm0_4             REJECT(flop count changed (4376 -> 4382))  255.32s
+    llm0_5             REJECT(area degraded 5.4% > 5%)  263.49s
+    llm0_6             REJECT(area degraded 12.1% > 5%)  268.27s
+    llm0_7             REJECT(area degraded 9.3% > 5%)  261.19s
+    every run failed - halving K and relaxing abc_D_scale toward 1.0
+
+  --- iteration 2: 4 runs ---
+    relaxed            REJECT(area degraded 9.3% > 5%)  232.57s
+    relaxed            REJECT(area degraded 7.8% > 5%)  231.22s
+    relaxed            REJECT(area degraded 7.4% > 5%)  229.23s
+    relaxed            REJECT(area degraded 7.6% > 5%)  229.7s
+    every run failed - halving K and relaxing abc_D_scale toward 1.0
+
+  --- iteration 3: 1 runs ---
+    relaxed            REJECT(area degraded 7.5% > 5%)  165.42s
+    every run failed - halving K and relaxing abc_D_scale toward 1.0
+
+  --- iteration 4: 1 runs ---
+    relaxed            REJECT(area degraded 6.6% > 5%)  141.85s
+  verifier: accept_unverified - Structural checks (assert, ports, seq cell count) all passed; Large delay improvement is accompanied by reduced logic depth (35->31) and lower cell count (74546->65521), suggesting genuine remapping rather than a no-op
+
+  best score 0.3412
+  rules learned: ['R-010']
+  artifacts: /home/ubuntu/chisage/yosys-agent/results/jpeg/best_config.json, /home/ubuntu/chisage/yosys-agent/results/jpeg/trajectory.csv
+
+========================================================================
+report: /home/ubuntu/chisage/yosys-agent/results/summary.md
+llm usage: {"llm_calls": 27, "by_model": {"claude-opus-5": {"input": 148433, "output": 22463, "cache_read": 0}, "claude-sonnet-5": {"input": 9478, "output": 1280, "cache_read": 0}}, "est_cost_usd": 1.3355}
+  gcd            OK             score 0.6345
+  dynamic_node   OK             score 0.5732
+  aes            OK             score 0.5043
+  bp_fe_top      OK             score 0.2709
+  jpeg           OK             score 0.3412

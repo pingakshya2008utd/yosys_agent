@@ -1,0 +1,99 @@
+{
+  "design": "aes",
+  "status": "OK",
+  "tier": "small",
+  "top": "aes_cipher_top",
+  "clk_ns": 0.82,
+  "rtl_lines": 1406,
+  "profile": {
+    "size_class": "tiny",
+    "dominant_style": "datapath",
+    "arithmetic_hint": true,
+    "recommended_goal_weights": {
+      "delay": 0.75,
+      "area": 0.25
+    },
+    "rationale": "AES cipher core is a compact (1.4k-line) cipher datapath with wide regular XOR/sbox and key-schedule arithmetic under a tight 0.82 ns clock, so delay should dominate and adder mapping is worth searching."
+  },
+  "weights": {
+    "delay": 0.75,
+    "area": 0.25
+  },
+  "leeway": 0.05,
+  "retrieved_rules": [
+    "R-005",
+    "R-001",
+    "R-006"
+  ],
+  "baseline_mode": "resyn2",
+  "baseline_csv_crosscheck": {
+    "csv_cells": 12010,
+    "measured_cells": 12086,
+    "csv_area": 14018.732,
+    "measured_area": 14086.03,
+    "csv_flops": 562,
+    "measured_flops": 562,
+    "csv_logic_depth": 22,
+    "measured_logic_depth": 21,
+    "area_delta_pct": 0.48,
+    "matches_csv": false
+  },
+  "baseline": {
+    "abc_delay_ps": 1981.7,
+    "chip_area": 14086.03,
+    "cell_count": 12086,
+    "seq_cells": 562,
+    "logic_depth": 21,
+    "wall_time_s": 26.57
+  },
+  "best": {
+    "config": {
+      "flatten": true,
+      "extra_opt": "share; opt -full; opt -fast",
+      "abc_D_scale": 0.8,
+      "resyn_loops": 2,
+      "use_dch": false,
+      "abc_flow": "resyn2",
+      "mapper": "map",
+      "post": "topo;dnsize;upsize",
+      "adder_map": false
+    },
+    "score": 0.504301,
+    "delay_ps": 653.27,
+    "area_um2": 14483.966,
+    "cells": 12162,
+    "logic_depth": 21,
+    "delay_ratio": 0.3297,
+    "area_ratio": 1.0283,
+    "label": "llm3_1",
+    "rundir": "/home/ubuntu/chisage/yosys-agent/work/aes/iter4/run01_llm3_1"
+  },
+  "verifier": {
+    "verdict": "reject",
+    "reasons": [
+      "Delay improved drastically (0.33x) while logic_depth remained exactly unchanged (21) and area changed only marginally (+2.8%), which is the suspicious pattern indicating the mapping likely did not meaningfully change despite the reported delay drop",
+      "No SAT miter was run to verify functional equivalence, leaving the large metric change unverified"
+    ],
+    "unverified": [
+      "Functional equivalence (no SAT miter run)",
+      "Whether the delay improvement reflects a real timing/mapping change or a measurement artifact"
+    ]
+  },
+  "n_synth_runs": 41,
+  "n_accepted": 33,
+  "iterations_run": 5,
+  "best_score_by_iteration": [
+    0.964223,
+    0.530759,
+    0.512589,
+    0.512589,
+    0.504301
+  ],
+  "iterations_to_best": 5,
+  "agent_wallclock_s": 561.7,
+  "baseline_wallclock_s": 26.57,
+  "per_run_timeout_s": 212,
+  "rules_added": [
+    "R-008"
+  ]
+}

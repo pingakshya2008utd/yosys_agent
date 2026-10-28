@@ -1,0 +1,98 @@
+{
+  "design": "dynamic_node",
+  "status": "OK",
+  "tier": "small",
+  "top": "dynamic_node_top_wrap",
+  "clk_ns": 2.0,
+  "rtl_lines": 6251,
+  "profile": {
+    "size_class": "small",
+    "dominant_style": "control",
+    "arithmetic_hint": false,
+    "recommended_goal_weights": {
+      "delay": 0.6,
+      "area": 0.4
+    },
+    "rationale": "At 6251 RTL lines with no macros, dynamic_node is a small NoC router dominated by routing/arbitration FSMs and mux-heavy control logic rather than wide arithmetic, though its 2.0 ns clock still warrants a delay-leaning weighting."
+  },
+  "weights": {
+    "delay": 0.6,
+    "area": 0.4
+  },
+  "leeway": 0.05,
+  "retrieved_rules": [
+    "R-002",
+    "R-001"
+  ],
+  "baseline_mode": "resyn2",
+  "baseline_csv_crosscheck": {
+    "csv_cells": 11363,
+    "measured_cells": 11355,
+    "csv_area": 20819.288,
+    "measured_area": 20835.78,
+    "csv_flops": 2257,
+    "measured_flops": 2257,
+    "csv_logic_depth": 31,
+    "measured_logic_depth": 30,
+    "area_delta_pct": 0.08,
+    "matches_csv": false
+  },
+  "baseline": {
+    "abc_delay_ps": 2622.29,
+    "chip_area": 20835.78,
+    "cell_count": 11355,
+    "seq_cells": 2257,
+    "logic_depth": 30,
+    "wall_time_s": 15.17
+  },
+  "best": {
+    "config": {
+      "flatten": true,
+      "extra_opt": "opt -full",
+      "abc_D_scale": 0.85,
+      "resyn_loops": 2,
+      "use_dch": true,
+      "abc_flow": "dch_map",
+      "mapper": "&nf",
+      "post": "buffer;upsize;dnsize",
+      "adder_map": false
+    },
+    "score": 0.573224,
+    "delay_ps": 767.72,
+    "area_um2": 20708.898,
+    "cells": 9178,
+    "logic_depth": 18,
+    "delay_ratio": 0.2928,
+    "area_ratio": 0.9939,
+    "label": "speed_dch",
+    "rundir": "/home/ubuntu/chisage/yosys-agent/work/dynamic_node/iter0/run03_speed_dch"
+  },
+  "verifier": {
+    "verdict": "accept_unverified",
+    "reasons": [
+      "check -assert passed",
+      "ports and sequential cell counts match baseline",
+      "delay improvement correlates with logic depth reduction (30->18) and cell count reduction, consistent with real remapping, not suspicious",
+      "no SAT miter run due to design size, so functional equivalence not formally verified"
+    ],
+    "unverified": [
+      "functional equivalence via SAT miter (skipped due to design size)"
+    ]
+  },
+  "n_synth_runs": 33,
+  "n_accepted": 28,
+  "iterations_run": 4,
+  "best_score_by_iteration": [
+    0.573224,
+    0.573224,
+    0.573224,
+    0.573224
+  ],
+  "iterations_to_best": 1,
+  "agent_wallclock_s": 315.0,
+  "baseline_wallclock_s": 15.17,
+  "per_run_timeout_s": 121,
+  "rules_added": [
+    "R-007"
+  ]
+}

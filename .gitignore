@@ -1,0 +1,21 @@
+# Secrets - never commit. .env holds the Anthropic API key.
+.env
+*.key
+*.pem
+
+# Virtualenv (327 MB; recreate with: python3 -m venv .venv && pip install -r requirements.txt)
+.venv/
+
+# Per-run scratch: generated scripts, full Yosys logs, gate-level netlists.
+# ~5 GB for a 5-design sweep, so it stays local. Everything needed to read the
+# results is committed under results/ and knowledge/.
+work/
+
+__pycache__/
+*.pyc
+*.pyo
+
+# Tracked on purpose, listed here so the intent is explicit:
+#   results/        best_config.json, trajectory.csv, summary.md, the .xlsx
+#   knowledge/      rules.json and per-design run history
+#   *.log           sweep console transcripts (small, useful as evidence)

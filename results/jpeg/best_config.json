@@ -1,0 +1,98 @@
+{
+  "design": "jpeg",
+  "status": "OK",
+  "tier": "small",
+  "top": "jpeg_encoder",
+  "clk_ns": 1.0,
+  "rtl_lines": 2585,
+  "profile": {
+    "size_class": "small",
+    "dominant_style": "datapath",
+    "arithmetic_hint": true,
+    "recommended_goal_weights": {
+      "delay": 0.75,
+      "area": 0.25
+    },
+    "rationale": "A 2.6k-line JPEG encoder is dominated by DCT/quantization arithmetic (adders and multipliers) under a tight 1.0 ns clock, so adder mapping and delay-weighted search should dominate."
+  },
+  "weights": {
+    "delay": 0.75,
+    "area": 0.25
+  },
+  "leeway": 0.05,
+  "retrieved_rules": [
+    "R-001",
+    "R-005",
+    "R-007",
+    "R-008",
+    "R-009"
+  ],
+  "baseline_mode": "resyn2",
+  "baseline_csv_crosscheck": {
+    "csv_cells": 74711,
+    "measured_cells": 74546,
+    "csv_area": 92064.728,
+    "measured_area": 91928.802,
+    "csv_flops": 4383,
+    "measured_flops": 4376,
+    "csv_logic_depth": 35,
+    "measured_logic_depth": 35,
+    "area_delta_pct": 0.15,
+    "matches_csv": false
+  },
+  "baseline": {
+    "abc_delay_ps": 9312.47,
+    "chip_area": 91928.802,
+    "cell_count": 74546,
+    "seq_cells": 4376,
+    "logic_depth": 35,
+    "wall_time_s": 137.8
+  },
+  "best": {
+    "config": {
+      "flatten": true,
+      "extra_opt": "opt -full",
+      "abc_D_scale": 0.85,
+      "resyn_loops": 2,
+      "use_dch": true,
+      "abc_flow": "dch_map",
+      "mapper": "&nf",
+      "post": "buffer;upsize;dnsize",
+      "adder_map": false
+    },
+    "score": 0.341193,
+    "delay_ps": 1129.88,
+    "area_um2": 92000.888,
+    "cells": 65521,
+    "logic_depth": 31,
+    "delay_ratio": 0.1213,
+    "area_ratio": 1.0008,
+    "label": "speed_dch",
+    "rundir": "/home/ubuntu/chisage/yosys-agent/work/jpeg/iter0/run06_speed_dch"
+  },
+  "verifier": {
+    "verdict": "accept_unverified",
+    "reasons": [
+      "Structural checks (assert, ports, seq cell count) all passed",
+      "Large delay improvement is accompanied by reduced logic depth (35->31) and lower cell count (74546->65521), suggesting genuine remapping rather than a no-op",
+      "Area stayed roughly flat, consistent with a delay-focused optimization"
+    ],
+    "unverified": [
+      "No SAT miter was run due to design size, so functional equivalence is not formally verified"
+    ]
+  },
+  "n_synth_runs": 23,
+  "n_accepted": 2,
+  "iterations_run": 2,
+  "best_score_by_iteration": [
+    0.341193,
+    0.341193
+  ],
+  "iterations_to_best": 1,
+  "agent_wallclock_s": 1923.5,
+  "baseline_wallclock_s": 137.8,
+  "per_run_timeout_s": 900,
+  "rules_added": [
+    "R-010"
+  ]
+}
