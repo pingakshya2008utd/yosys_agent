@@ -77,7 +77,7 @@ size, style and clock:
 | gcd | 0.75 | 0.25 |
 | aes | 0.75 | 0.25 |
 | jpeg | 0.75 | 0.25 |
-| dynamic_node | 0.60 | 0.40 |
+| dynamic_node | 0.75 | 0.25 |
 | bp_fe_top | 0.75 | 0.25 |
 
 Baseline and candidates run through the same `harness/synth_templated.tcl`
